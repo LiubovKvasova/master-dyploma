@@ -1,7 +1,7 @@
-import { Schema, model } from 'mongoose';
+import { Schema } from 'mongoose';
 import LocationSchema from './location.schema';
 
-const JobSchema = new Schema({
+export const JobSchema = new Schema({
   title: {
     type: String,
     required: true,
@@ -34,5 +34,3 @@ const JobSchema = new Schema({
     required: true,
   },
 });
-
-export const Job = model('Job', JobSchema);

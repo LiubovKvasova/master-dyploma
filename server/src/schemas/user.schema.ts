@@ -1,8 +1,8 @@
-import { Schema, model } from 'mongoose';
-import passportLocalMongoose from 'passport-local-mongoose';
+import { Schema } from 'mongoose';
+import * as passportLocalMongoose from 'passport-local-mongoose';
 import LocationSchema from './location.schema';
 
-export const UserSchema = new Schema({
+const UserSchema = new Schema({
   username: {
     type: String,
     required: true,
@@ -26,5 +26,12 @@ export const UserSchema = new Schema({
   },
 });
 
-UserSchema.plugin(passportLocalMongoose, { usernameQueryFields: ['email'] });
-export const User = model('User', UserSchema);
+UserSchema.plugin(passportLocalMongoose, {
+  usernameField: 'username',
+  usernameQueryFields: ['email']
+});
+
+// Export UserSchema only after applying a plugin
+export {
+  UserSchema
+};
