@@ -7,7 +7,9 @@ import { UserDocument } from './user.types';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel('User') private userModel: PassportLocalModel<UserDocument>) {}
+  constructor(
+    @InjectModel('User') private userModel: PassportLocalModel<UserDocument>,
+  ) {}
 
   async register(createUserDto: CreateUserDto) {
     const { email, username, password } = createUserDto;

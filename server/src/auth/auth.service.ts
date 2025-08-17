@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { filterOutKeys } from 'src/utils';
 
 @Injectable()
 export class AuthService {
-  login(req: any) {
-    return { message: 'Logged in successfully', user: req.user };
+  login(req: any): any {
+    const unwantedKeys = ['_id', '__v', 'hash', 'salt'];
+    const user = filterOutKeys(req?.user?._doc, unwantedKeys);
+    const expires = req.session.cookie.expires;
+
+    return { user, expires };
   }
 
   async logout(req: any): Promise<{ message: string }> {

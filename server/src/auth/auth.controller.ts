@@ -10,18 +10,18 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   login(@Request() req) {
-    return req.user;
+    return this.authService.login(req);
   }
 
   @UseGuards(AuthenticatedGuard)
   @Get('logout')
-  logout(@Request() req) {
+  async logout(@Request() req) {
     return this.authService.logout(req);
   }
 
   @UseGuards(AuthenticatedGuard)
   @Get('user/info')
   getUserInfo(@Request() req) {
-    return { user: req.user };
+    return { user: req?.user };
   }
 }

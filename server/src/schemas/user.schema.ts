@@ -28,10 +28,8 @@ const UserSchema = new Schema({
 
 UserSchema.plugin(passportLocalMongoose, {
   usernameField: 'username',
-  usernameQueryFields: ['email']
+  usernameQueryFields: ['email'],
 });
 
 // Export UserSchema only after applying a plugin
-export {
-  UserSchema
-};
+export { UserSchema };

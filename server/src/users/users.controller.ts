@@ -11,8 +11,10 @@ export class UsersController {
     try {
       const user = await this.usersService.register(createUserDto);
       return { message: 'User registered successfully', user };
-    } catch (err) {
-      throw new BadRequestException(err.message || 'Registration failed');
+    } catch (error) {
+      const errorMessage: string =
+        (error as Error).message ?? 'Registration failed';
+      throw new BadRequestException(errorMessage);
     }
   }
 }

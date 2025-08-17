@@ -7,7 +7,9 @@ import { UserDocument } from 'src/users/user.types';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
-  constructor(@InjectModel('User') private userModel: PassportLocalModel<UserDocument>) {
+  constructor(
+    @InjectModel('User') private userModel: PassportLocalModel<UserDocument>,
+  ) {
     super();
   }
 
