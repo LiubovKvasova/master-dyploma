@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
 export const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -24,32 +28,32 @@ export const Register = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 flex flex-col gap-2 max-w-sm">
-      <h1 className="text-xl font-bold">Реєстрація</h1>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="border p-2"
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border p-2"
-      />
-      <input
-        type="password"
-        placeholder="Пароль"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border p-2"
-      />
-      <button type="submit" className="bg-green-500 text-white px-4 py-2">
-        Register
-      </button>
-    </form>
+    <Card className="max-w-sm mx-auto mt-8">
+      <CardHeader>
+        <CardTitle>Реєстрація</CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Input
+            placeholder="Ім'я користувача"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <Input
+            placeholder="Електронна пошта"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            type="password"
+            placeholder="Пароль"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button type="submit">Login</Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
