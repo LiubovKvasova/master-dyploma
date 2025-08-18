@@ -1,14 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Loader2 } from "lucide-react";
 
 import { Navbar } from '@/components/navbar';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Home } from '@/pages/Home';
 import { Login } from '@/pages/Login';
 import { Register } from '@/pages/Register';
+import { UserSettings } from '@/pages/UserSettings';
 import { apiFetch } from '@/lib/api';
-import { USER_COOKIE_NAME } from '@/lib/constants';
+import * as storageHelper from '@/lib/storageHelper';
 
 const App = () => {
   const [user, setUser] = useState<any>(null);
@@ -18,12 +18,7 @@ const App = () => {
     const expirationDate = new Date(data.expires);
     const user = data?.user;
 
-    await window.cookieStore.set({
-      name: USER_COOKIE_NAME,
-      value: JSON.stringify(user),
-      expires: expirationDate.getTime()
-    });
-
+    await storageHelper.setUser(user, expirationDate.getTime());
     setUser(user);
   };
 
@@ -31,7 +26,7 @@ const App = () => {
     const res = await apiFetch('/auth/logout');
 
     if (res?.ok) {
-      await window.cookieStore.delete(USER_COOKIE_NAME);
+      await storageHelper.removeUser();
       setUser(null);
     }
   };
@@ -39,11 +34,10 @@ const App = () => {
   useEffect(() => {
     // async IIFE to prevent passing async function to useEffect
     (async () => {
-      const user = await window.cookieStore.get(USER_COOKIE_NAME);
+      const user = await storageHelper.getUser();
 
       if (user) {
-        const parsedUser = JSON.parse(user.value);
-        setUser(parsedUser);
+        setUser(user);
       }
 
       setLoading(false);
@@ -63,6 +57,7 @@ const App = () => {
                 <Route path="/" element={<Home user={user} />} />
                 <Route path="/login" element={<Login onLogin={handleLogin} />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/settings" element={<UserSettings user={user} setUser={setUser} />}></Route>
               </Routes>
             </BrowserRouter>
           )

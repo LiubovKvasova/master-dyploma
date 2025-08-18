@@ -1,6 +1,11 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Put, Request, Body, BadRequestException, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateLocationDto } from './dto/update-location.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthenticatedGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -16,5 +21,29 @@ export class UsersController {
         (error as Error).message ?? 'Registration failed';
       throw new BadRequestException(errorMessage);
     }
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Put('update')
+  updateProfile(@Request() req, @Body() dto: UpdateUserDto) {
+    return this.usersService.updateProfile(req.user._id, dto);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Put('update/password')
+  updatePassword(@Request() req, @Body() dto: UpdatePasswordDto) {
+    return this.usersService.updatePassword(req.user._id, dto);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Put('update/role')
+  updateRole(@Request() req, @Body() dto: UpdateRoleDto) {
+    return this.usersService.updateRole(req.user._id, dto);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Put('update/location')
+  updateLocation(@Request() req, @Body() dto: UpdateLocationDto) {
+    return this.usersService.updateLocation(req.user._id, dto);
   }
 }

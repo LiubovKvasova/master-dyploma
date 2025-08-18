@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import {
   NavigationMenu,
@@ -25,25 +25,33 @@ export const Navbar = ({ user, onLogout }: { user: any; onLogout: () => void }) 
         </MenuItem>
 
         {
-          !user &&
-          <MenuItem>
-            <Link to="/login">Login</Link>
-          </MenuItem>
-        }
+          !user && (
+            <>
+              <MenuItem>
+                <Link to="/login">Login</Link>
+              </MenuItem>
 
-        {
-          !user &&
-          <MenuItem>
-            <Link to="/register">Register</Link>
-          </MenuItem>
+              <MenuItem>
+                <Link to="/register">Register</Link>
+              </MenuItem>
+            </>
+          )
         }
 
         {user && (
-          <MenuItem>
-            <Link to="#" onClick={onLogout} className="text-red-500">
-              Logout
-            </Link>
-          </MenuItem>
+          <>
+            <MenuItem>
+              <Link to="/settings">
+                Settings
+              </Link>
+            </MenuItem>
+
+            <MenuItem>
+              <Link to="#" onClick={onLogout} className="text-red-500">
+                Logout
+              </Link>
+            </MenuItem>
+          </>
         )}
       </NavigationMenuList>
     </NavigationMenu>
