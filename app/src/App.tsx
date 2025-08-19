@@ -7,6 +7,8 @@ import { Home } from '@/pages/Home';
 import { Login } from '@/pages/Login';
 import { Register } from '@/pages/Register';
 import { UserSettings } from '@/pages/UserSettings';
+import { LocationPicker } from '@/pages/LocationPicker';
+
 import { apiFetch } from '@/lib/api';
 import * as storageHelper from '@/lib/storageHelper';
 
@@ -23,12 +25,9 @@ const App = () => {
   };
 
   const handleLogout = async () => {
-    const res = await apiFetch('/auth/logout');
-
-    if (res?.ok) {
-      await storageHelper.removeUser();
-      setUser(null);
-    }
+    await apiFetch('/auth/logout');
+    await storageHelper.removeUser();
+    setUser(null);
   };
 
   useEffect(() => {
@@ -58,6 +57,7 @@ const App = () => {
                 <Route path="/login" element={<Login onLogin={handleLogin} />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/settings" element={<UserSettings user={user} setUser={setUser} />}></Route>
+                <Route path="/location" element={<LocationPicker user={user} setUser={setUser} />}></Route>
               </Routes>
             </BrowserRouter>
           )

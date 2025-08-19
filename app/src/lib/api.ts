@@ -12,4 +12,4 @@ export const apiFetch = async (path: string, options: RequestInit = {}): Promise
     },
     ...otherOptions,
   });
-}
+};

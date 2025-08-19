@@ -71,9 +71,10 @@ export class UsersService {
   }
 
   async updateLocation(userId: string, dto: UpdateLocationDto) {
+    const { coordinates, address } = dto;
     const user = await this.userModel.findByIdAndUpdate(
       userId,
-      { location: { type: 'Point', coordinates: dto.coordinates } },
+      { location: { type: 'Point', coordinates }, address },
       { new: true },
     );
 

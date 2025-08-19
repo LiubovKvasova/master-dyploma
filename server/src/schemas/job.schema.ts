@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose';
+import AddressSchema from './address.schema';
 import LocationSchema from './location.schema';
 
 export const JobSchema = new Schema({
@@ -16,6 +17,9 @@ export const JobSchema = new Schema({
   location: {
     type: LocationSchema,
     index: '2dsphere',
+  },
+  address: {
+    type: AddressSchema,
   },
   duration: {
     required: true,

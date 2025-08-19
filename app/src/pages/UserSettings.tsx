@@ -37,9 +37,9 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
       await storageHelper.updateUser(newUser);
       setUser((oldValue: object) => Object.assign(oldValue, newUser));
 
-      alert('Profile updated!');
+      alert('Профіль оновлено!');
     } else {
-      alert('Error updating profile');
+      alert('Виникла помилка при оновленні профілю');
     }
   };
 
@@ -51,9 +51,9 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
     });
 
     if (res.ok) {
-      alert('Password updated!');
+      alert('Пароль оновлено!');
     } else {
-      alert('Error updating password');
+      alert('Виникла помилка при оновленні паролю');
     }
   };
 
@@ -69,79 +69,76 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
       await storageHelper.updateUser(newUser);
       setUser((oldValue: object) => Object.assign(oldValue, newUser));
 
-      alert('Role updated!');
+      alert('Роль оновлено!');
     } else {
-      alert('Error updating role');
+      alert('Виникла помилка при оновленні ролі');
     }
   };
 
   return (
     <div className="container mx-auto p-6 grid gap-6">
-      {/* --- Profile Update --- */}
       <Card>
         <CardHeader>
-          <CardTitle>Update Profile</CardTitle>
+          <CardTitle>Дані профілю</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleProfileUpdate} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Ім'я користувача</Label>
               <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Електронна пошта</Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <CardFooter>
-              <Button type="submit">Save</Button>
+              <Button type="submit">Зберегти</Button>
             </CardFooter>
           </form>
         </CardContent>
       </Card>
 
-      {/* --- Password Update --- */}
       <Card>
         <CardHeader>
-          <CardTitle>Change Password</CardTitle>
+          <CardTitle>Зміна паролю</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handlePasswordUpdate} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="oldPassword">Old Password</Label>
+              <Label htmlFor="oldPassword">Старий пароль</Label>
               <Input id="oldPassword" type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="newPassword">New Password</Label>
+              <Label htmlFor="newPassword">Новий пароль</Label>
               <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
             </div>
             <CardFooter>
-              <Button type="submit">Update Password</Button>
+              <Button type="submit">Оновити</Button>
             </CardFooter>
           </form>
         </CardContent>
       </Card>
 
-      {/* --- Role Update --- */}
       <Card>
         <CardHeader>
-          <CardTitle>Change Role</CardTitle>
+          <CardTitle>Зміна ролі</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleRoleUpdate} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="role">Role</Label>
+              <Label htmlFor="role">Роль</Label>
               <Select value={role} onValueChange={setRole}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="worker">Worker</SelectItem>
-                  <SelectItem value="employer">Employer</SelectItem>
+                  <SelectItem value="worker">Працівник</SelectItem>
+                  <SelectItem value="employer">Роботодавець</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <CardFooter>
-              <Button type="submit">Update Role</Button>
+              <Button type="submit">Оновити роль</Button>
             </CardFooter>
           </form>
         </CardContent>

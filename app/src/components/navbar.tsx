@@ -28,11 +28,11 @@ export const Navbar = ({ user, onLogout }: { user: any; onLogout: () => void }) 
           !user && (
             <>
               <MenuItem>
-                <Link to="/login">Login</Link>
+                <Link to="/login">Ввійти</Link>
               </MenuItem>
 
               <MenuItem>
-                <Link to="/register">Register</Link>
+                <Link to="/register">Зареєструватись</Link>
               </MenuItem>
             </>
           )
@@ -41,14 +41,20 @@ export const Navbar = ({ user, onLogout }: { user: any; onLogout: () => void }) 
         {user && (
           <>
             <MenuItem>
+              <Link to="/location">
+                Локація
+              </Link>
+            </MenuItem>
+
+            <MenuItem>
               <Link to="/settings">
-                Settings
+                Налаштування
               </Link>
             </MenuItem>
 
             <MenuItem>
               <Link to="#" onClick={onLogout} className="text-red-500">
-                Logout
+                Вийти
               </Link>
             </MenuItem>
           </>
