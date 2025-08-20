@@ -1,4 +1,13 @@
-import { IsArray, ArrayMinSize, ArrayMaxSize, IsNumber, IsOptional, IsString, ValidateNested, IsNumberString } from 'class-validator';
+import {
+  IsArray,
+  ArrayMinSize,
+  ArrayMaxSize,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+  IsNumberString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class AddressDto {

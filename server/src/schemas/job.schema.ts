@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema, Types } from 'mongoose';
 import AddressSchema from './address.schema';
 import LocationSchema from './location.schema';
 
@@ -36,5 +36,11 @@ export const JobSchema = new Schema({
   hourRate: {
     type: Number,
     required: true,
+  },
+  owner: {
+    type: Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true,
   },
 });

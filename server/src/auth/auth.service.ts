@@ -5,7 +5,7 @@ import { filterOutKeys } from 'src/utils';
 export class AuthService {
   login(req: any): any {
     const unwantedKeys = ['_id', '__v', 'hash', 'salt'];
-    const user = filterOutKeys(req?.user?._doc, unwantedKeys);
+    const user = filterOutKeys(req.user.toObject(), unwantedKeys);
     const expires = req.session.cookie.expires;
 
     return { user, expires };

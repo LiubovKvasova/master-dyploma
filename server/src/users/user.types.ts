@@ -5,6 +5,7 @@ export interface UserDocument extends Document {
   email: string;
   role: 'employer' | 'worker';
   rating: number;
+  address: object;
   location?: {
     type: 'Point';
     coordinates: [number, number];

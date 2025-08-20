@@ -26,7 +26,7 @@ const UserSchema = new Schema({
     type: LocationSchema,
   },
   coordinates: {
-    type: [Number]
+    type: [Number],
   },
   address: {
     type: AddressSchema,
@@ -47,7 +47,7 @@ UserSchema.set('toObject', {
       ret.coordinates = coordinates;
       delete ret.location;
     }
-  }
+  },
 });
 
 // Export UserSchema only after applying a plugin

@@ -5,7 +5,7 @@ export const apiFetch = async (path: string, options: RequestInit = {}): Promise
   const { headers, ...otherOptions } = options;
 
   return fetch(fullUrl, {
-    credentials: "include", // 👈 важливо для куки
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(headers || {}),
@@ -13,3 +13,21 @@ export const apiFetch = async (path: string, options: RequestInit = {}): Promise
     ...otherOptions,
   });
 };
+
+export const geoFetch = async (lat: number, lon: number): Promise<object | null> => {
+  const geoResearchUrl = new URL('https://nominatim.openstreetmap.org/reverse');
+
+  geoResearchUrl.searchParams.set('lat', `${lat}`);
+  geoResearchUrl.searchParams.set('lon', `${lon}`);
+  geoResearchUrl.searchParams.set('format', 'json');
+  geoResearchUrl.searchParams.set('accept-language', 'uk');
+
+  const result = await fetch(geoResearchUrl);
+
+  if (!result?.ok) {
+    return null;
+  }
+
+  const response = await result.json();
+  return response.address;
+}

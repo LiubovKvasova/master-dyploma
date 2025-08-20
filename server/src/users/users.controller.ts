@@ -1,10 +1,18 @@
-import { Controller, Post, Put, Request, Body, BadRequestException, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Put,
+  Request,
+  Body,
+  BadRequestException,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateLocationDto } from './dto/update-location.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from 'src/dto/create-user.dto';
+import { UpdateLocationDto } from 'src/dto/update-location.dto';
+import { UpdatePasswordDto } from 'src/dto/update-password.dto';
+import { UpdateRoleDto } from 'src/dto/update-role.dto';
+import { UpdateUserDto } from 'src/dto/update-user.dto';
 import { AuthenticatedGuard } from 'src/auth/auth.guard';
 
 @Controller('users')

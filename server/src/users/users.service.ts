@@ -1,12 +1,16 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PassportLocalModel } from 'mongoose';
 
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateLocationDto } from './dto/update-location.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from 'src/dto/create-user.dto';
+import { UpdateLocationDto } from 'src/dto/update-location.dto';
+import { UpdatePasswordDto } from 'src/dto/update-password.dto';
+import { UpdateRoleDto } from 'src/dto/update-role.dto';
+import { UpdateUserDto } from 'src/dto/update-user.dto';
 import { UserDocument } from './user.types';
 import { filterOutKeys } from 'src/utils';
 
@@ -31,7 +35,9 @@ export class UsersService {
   }
 
   async updateProfile(userId: string, dto: UpdateUserDto) {
-    const user = await this.userModel.findByIdAndUpdate(userId, dto, { new: true });
+    const user = await this.userModel.findByIdAndUpdate(userId, dto, {
+      new: true,
+    });
 
     if (user) {
       const object = user.toObject();
@@ -60,7 +66,11 @@ export class UsersService {
   }
 
   async updateRole(userId: string, dto: UpdateRoleDto) {
-    const user = await this.userModel.findByIdAndUpdate(userId, { role: dto.role }, { new: true });
+    const user = await this.userModel.findByIdAndUpdate(
+      userId,
+      { role: dto.role },
+      { new: true },
+    );
 
     if (user) {
       const object = user.toObject();

@@ -1,9 +1,13 @@
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 type MapProps = {
   onSelect: (coords: [number, number]) => void;
   coords?: [number, number];
+};
+
+type StyleProp = {
+  style: CSSProperties;
 };
 
 function LocationMarker({ onSelect, coords }: MapProps) {
@@ -24,19 +28,13 @@ function LocationMarker({ onSelect, coords }: MapProps) {
   return <Marker position={[position[0], position[1]]}></Marker>;
 }
 
-export const MapPicker = ({ onSelect, coords }: MapProps) => {
+export const MapPicker = ({ onSelect, coords, style }: MapProps & StyleProp) => {
   const mapCenter = coords ?? [50.4501, 30.5234];
   const zoom = (coords) ? 15 : 6;
 
   return (
-    <MapContainer
-      center={mapCenter}
-      zoom={zoom}
-      style={{ height: "400px", width: "100%" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <MapContainer center={mapCenter} zoom={zoom} style={style}>
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <LocationMarker onSelect={onSelect} coords={coords} />
     </MapContainer>
   );
