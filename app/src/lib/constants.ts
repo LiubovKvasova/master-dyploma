@@ -18,3 +18,10 @@ export const ADDRESS_FIELDS = [
   'state',
   'postcode',
 ];
+
+export const CENTER_OF_UKRAINE: [number, number] = [50.4501, 30.5234];
+
+export const SCALE = {
+  COUNTRY: 6,
+  BUILDING: 15,
+};

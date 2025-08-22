@@ -11,10 +11,6 @@ import { apiFetch } from '@/lib/api';
 import * as storageHelper from '@/lib/storageHelper';
 
 export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<any> }) => {
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
   const [username, setUsername] = useState(user?.username);
   const [email, setEmail] = useState(user?.email);
 
@@ -22,6 +18,10 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
   const [newPassword, setNewPassword] = useState('');
 
   const [role, setRole] = useState(user?.role);
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   // --- Handlers ---
   const handleProfileUpdate = async (e: React.FormEvent) => {
@@ -35,7 +35,7 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
     if (res.ok) {
       const newUser = await res.json();
       await storageHelper.updateUser(newUser);
-      setUser((oldValue: object) => Object.assign(oldValue, newUser));
+      setUser((oldValue: object) => ({...oldValue, ...newUser}));
 
       alert('Профіль оновлено!');
     } else {
@@ -67,7 +67,7 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
     if (res.ok) {
       const newUser = await res.json();
       await storageHelper.updateUser(newUser);
-      setUser((oldValue: object) => Object.assign(oldValue, newUser));
+      setUser((oldValue: object) => ({...oldValue, ...newUser}));
 
       alert('Роль оновлено!');
     } else {

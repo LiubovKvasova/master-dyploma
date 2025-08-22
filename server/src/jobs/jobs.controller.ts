@@ -6,6 +6,9 @@ import {
   Body,
   Request,
   Query,
+  Delete,
+  Param,
+  NotFoundException,
 } from '@nestjs/common';
 
 import { JobsService } from './jobs.service';
@@ -26,6 +29,18 @@ export class JobsController {
   @Get('my')
   async myJobs(@Request() req) {
     return this.jobsService.findMyJobs(req.user._id);
+  }
+
+  @Delete(':id')
+  async deleteJob(@Param('id') id: string, @Request() req) {
+    const userId = req.user._id;
+    const job = await this.jobsService.findById(id, userId);
+
+    if (!job) {
+      throw new NotFoundException('Job not found');
+    }
+
+    return this.jobsService.deleteJob(id);
   }
 
   @Get('nearby')

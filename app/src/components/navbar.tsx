@@ -46,6 +46,23 @@ export const Navbar = ({ user, onLogout }: { user: any; onLogout: () => void }) 
               </Link>
             </MenuItem>
 
+            {
+              user.role === 'employer' &&
+                <>
+                  <MenuItem>
+                    <Link to="/create-job">
+                      Створити оголошення
+                    </Link>
+                  </MenuItem>
+
+                  <MenuItem>
+                    <Link to="/myjobs">
+                      Мої оголошення
+                    </Link>
+                  </MenuItem>
+                </>
+            }
+
             <MenuItem>
               <Link to="/settings">
                 Налаштування

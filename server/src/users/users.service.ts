@@ -11,7 +11,7 @@ import { UpdateLocationDto } from 'src/dto/update-location.dto';
 import { UpdatePasswordDto } from 'src/dto/update-password.dto';
 import { UpdateRoleDto } from 'src/dto/update-role.dto';
 import { UpdateUserDto } from 'src/dto/update-user.dto';
-import { UserDocument } from './user.types';
+import { UserDocument } from 'src/schemas/user.schema';
 import { filterOutKeys } from 'src/utils';
 
 const unwantedKeys = ['_id', '__v', 'hash', 'salt'];

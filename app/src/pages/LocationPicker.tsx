@@ -42,7 +42,7 @@ export const LocationPicker = ({ user, setUser }: { user: any, setUser: Dispatch
     if (result?.ok) {
       const newUser = await result.json();
       await updateUser(newUser);
-      setUser((oldValue: object) => Object.assign(oldValue, newUser));
+      setUser((oldValue: object) => ({...oldValue, ...newUser}));
 
       alert('Локацію збережено!');
     } else {

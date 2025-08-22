@@ -8,9 +8,11 @@ import { Login } from '@/pages/Login';
 import { Register } from '@/pages/Register';
 import { UserSettings } from '@/pages/UserSettings';
 import { LocationPicker } from '@/pages/LocationPicker';
+import { CreateJob } from '@/pages/CreateJob';
 
 import { apiFetch } from '@/lib/api';
 import * as storageHelper from '@/lib/storageHelper';
+import { EmployerJobs } from './pages/EmployerJobs';
 
 const App = () => {
   const [user, setUser] = useState<any>(null);
@@ -58,6 +60,8 @@ const App = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/settings" element={<UserSettings user={user} setUser={setUser} />}></Route>
                 <Route path="/location" element={<LocationPicker user={user} setUser={setUser} />}></Route>
+                <Route path="/create-job" element={<CreateJob user={user} />}></Route>
+                <Route path="/myjobs" element={<EmployerJobs user={user} />}></Route>
               </Routes>
             </BrowserRouter>
           )

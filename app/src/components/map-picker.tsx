@@ -1,5 +1,7 @@
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
-import { useState, type CSSProperties } from "react";
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { useState, type CSSProperties } from 'react';
+
+import { CENTER_OF_UKRAINE, SCALE } from '@/lib/constants';
 
 type MapProps = {
   onSelect: (coords: [number, number]) => void;
@@ -29,8 +31,8 @@ function LocationMarker({ onSelect, coords }: MapProps) {
 }
 
 export const MapPicker = ({ onSelect, coords, style }: MapProps & StyleProp) => {
-  const mapCenter = coords ?? [50.4501, 30.5234];
-  const zoom = (coords) ? 15 : 6;
+  const mapCenter = coords ?? CENTER_OF_UKRAINE;
+  const zoom = (coords) ? SCALE.BUILDING : SCALE.COUNTRY;
 
   return (
     <MapContainer center={mapCenter} zoom={zoom} style={style}>

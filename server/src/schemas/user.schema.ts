@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema, type HydratedDocument } from 'mongoose';
 import * as passportLocalMongoose from 'passport-local-mongoose';
 import AddressSchema from './address.schema';
 import LocationSchema from './location.schema';
@@ -50,5 +50,7 @@ UserSchema.set('toObject', {
   },
 });
 
+type UserDocument = HydratedDocument<typeof UserSchema>;
+
 // Export UserSchema only after applying a plugin
-export { UserSchema };
+export { UserSchema, UserDocument };

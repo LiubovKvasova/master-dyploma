@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { AddressDto } from './update-location.dto';
+import { AddressDto } from './address.dto';
 
 export class CreateJobDto {
   @IsString()
