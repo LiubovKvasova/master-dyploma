@@ -63,6 +63,17 @@ export const Navbar = ({ user, onLogout }: { user: any; onLogout: () => void }) 
                 </>
             }
 
+            {
+              user.role === 'worker' &&
+                <>
+                  <MenuItem>
+                    <Link to="/search-job">
+                      Пошук
+                    </Link>
+                  </MenuItem>
+                </>
+            }
+
             <MenuItem>
               <Link to="/settings">
                 Налаштування

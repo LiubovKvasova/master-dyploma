@@ -1,17 +1,16 @@
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class NearbyJobsDto {
   @Type(() => Number)
   @IsNumber()
-  lng: number;
+  lng: string;
 
   @Type(() => Number)
   @IsNumber()
-  lat: number;
+  lat: string;
 
   @Type(() => Number)
-  @IsOptional()
   @IsNumber()
-  maxDistance?: number = 2000;
+  maxDistance: string;
 }

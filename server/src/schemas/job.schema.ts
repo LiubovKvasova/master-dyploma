@@ -1,6 +1,5 @@
 import { Schema, type HydratedDocument } from 'mongoose';
 import AddressSchema from './address.schema';
-import LocationSchema from './location.schema';
 
 export const DurationSchema = new Schema({
   representation: {
@@ -27,8 +26,8 @@ export const JobSchema = new Schema({
     required: true,
   },
   location: {
-    type: LocationSchema,
-    index: '2dsphere',
+    type: [Number],
+    index: '2d',
   },
   coordinates: {
     type: [Number],
@@ -55,11 +54,10 @@ export const JobSchema = new Schema({
 JobSchema.set('toObject', {
   virtuals: true,
   transform: (_doc, ret) => {
-    const coordinates = ret.location?.coordinates?.slice();
+    const coordinates = ret.location?.slice();
 
     if (coordinates) {
       ret.coordinates = coordinates;
-      delete ret.location;
     }
   },
 });

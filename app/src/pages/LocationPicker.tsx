@@ -10,12 +10,13 @@ import { filterObjectKeys } from '@/lib/utils';
 import { ADDRESS_FIELDS } from '@/lib/constants';
 
 export const LocationPicker = ({ user, setUser }: { user: any, setUser: Dispatch<any> }) => {
+  const userCoordinates = user?.coordinates?.length > 0 ? user.coordinates : null;
+  const [coords, setCoords] = useState<[number, number] | undefined>(userCoordinates);
+  const [address, setAddress] = useState<any>(user?.address);
+
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-
-  const [coords, setCoords] = useState<[number, number] | undefined>(user?.coordinates);
-  const [address, setAddress] = useState<any>(user?.address);
 
   const handleSelect = async (coordinates: [number, number]) => {
     setCoords(coordinates);
@@ -49,6 +50,8 @@ export const LocationPicker = ({ user, setUser }: { user: any, setUser: Dispatch
       alert('Помилка збереження');
     }
   };
+
+  console.log({ coords, address });
 
   return (
     <div className="p-4">

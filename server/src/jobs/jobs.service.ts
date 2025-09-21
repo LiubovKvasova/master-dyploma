@@ -15,7 +15,7 @@ export class JobsService {
 
     const job = new this.jobModel({
       ...restOfDto,
-      location: { type: 'Point', coordinates },
+      location: coordinates,
       owner: userId,
     });
 
@@ -32,10 +32,12 @@ export class JobsService {
       return this.jobModel.findById(id).exec();
     }
 
-    return this.jobModel.find({
-      _id: id,
-      owner: userId
-    }).exec();
+    return this.jobModel
+      .find({
+        _id: id,
+        owner: userId,
+      })
+      .exec();
   }
 
   async deleteJob(id: string) {
@@ -44,14 +46,20 @@ export class JobsService {
 
   async findNearby(query: NearbyJobsDto) {
     const { lng, lat, maxDistance } = query;
+    const EARTH_RADIUS = 63781.37;
 
-    return this.jobModel.find({
-      location: {
-        $near: {
-          $geometry: { type: 'Point', coordinates: [lng, lat] },
-          $maxDistance: maxDistance,
+    const intDistance = Number.parseInt(maxDistance.toString());
+    const radians = intDistance / EARTH_RADIUS;
+
+    const results = await this.jobModel
+      .find({
+        location: {
+          $near: [lat, lng],
+          $maxDistance: radians,
         },
-      },
-    });
+      })
+      .exec();
+
+    return results.map((doc) => doc.toObject());
   }
 }
