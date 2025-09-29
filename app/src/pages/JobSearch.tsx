@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Tooltip, Circle, useMap } from 'react-leaflet';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { apiFetch } from '@/lib/api';
 import { SCALE } from '@/lib/constants';
+import { getCategoryName } from '@/lib/utils';
 
 type Job = {
   _id: string;
@@ -16,6 +18,9 @@ type Job = {
   hourRate: number;
   duration: { representation: string; value: number };
   coordinates: [number, number]; // [lng, lat]
+
+  // Calculated for Leaflet environment
+  distance?: number;
 };
 
 type JobSearchProps = {
@@ -47,9 +52,23 @@ export function JobSearch({ user }: JobSearchProps) {
     const res = await apiFetch(
       `/jobs/nearby?lat=${lat}&lng=${lng}&maxDistance=${maxDistance}`
     );
+
     if (res.ok) {
       const data = await res.json();
-      setJobs(data);
+
+      // Filter out jobs that are out of bounds
+      const filtered = data
+        .map((job: Job) => {
+          const distance = L.latLng(lat, lng).distanceTo(
+            L.latLng(job.coordinates[0], job.coordinates[1])
+          );
+
+          return { ...job, distance };
+        })
+        .filter((job: Job) => job.distance! <= maxDistance);
+
+      setSelectedJobId(null);
+      setJobs(filtered);
       setSearchRadius(maxDistance);
     } else {
       alert('Не вдалося отримати роботи поблизу');
@@ -81,9 +100,13 @@ export function JobSearch({ user }: JobSearchProps) {
               </CardHeader>
               <CardContent>
                 <p>{job.description}</p>
-                <p>Категорія: {job.category}</p>
+                <p>Категорія: {getCategoryName(job.category)}</p>
                 <p>Ставка: {job.hourRate} грн/год</p>
                 <p>Тривалість: {job.duration.representation}</p>
+
+                {typeof job.distance === 'number' && (
+                  <p>Відстань: {Math.round(job.distance)} м</p>
+                )}
               </CardContent>
             </Card>
           </div>

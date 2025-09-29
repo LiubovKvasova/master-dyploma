@@ -5,7 +5,9 @@ import { MapPicker } from '@/components/map-picker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { apiFetch, geoFetch } from '@/lib/api';
+import { JOB_CATEGORIES } from '@/lib/constants';
 
 type CreateJobProps = {
   user: {
@@ -37,7 +39,7 @@ export function CreateJob({ user }: CreateJobProps) {
     if (result) {
       setAddress(result);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,12 +108,18 @@ export function CreateJob({ user }: CreateJobProps) {
 
         <div>
           <Label htmlFor="category">Категорія</Label>
-          <Input
-            id="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            required
-          />
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger id="category" className="w-full">
+              <SelectValue placeholder="Оберіть категорію" />
+            </SelectTrigger>
+            <SelectContent>
+              {JOB_CATEGORIES.map((cat) => (
+                <SelectItem key={cat.value} value={cat.value}>
+                  {cat.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div>

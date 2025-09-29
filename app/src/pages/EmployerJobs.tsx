@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { apiFetch } from '@/lib/api';
 import { CENTER_OF_UKRAINE, SCALE } from '@/lib/constants';
+import { getCategoryName } from '@/lib/utils';
 
 type Job = {
   _id: string;
@@ -69,7 +70,7 @@ export function EmployerJobs({ user }: EmployerJobsProps) {
               </CardHeader>
               <CardContent>
                 <p>{job.description}</p>
-                <p>Категорія: {job.category}</p>
+                <p>Категорія: {getCategoryName(job.category)}</p>
                 <p>Ставка: {job.hourRate} грн/год</p>
                 <p>Тривалість: {job.duration.representation}</p>
                 <Button
