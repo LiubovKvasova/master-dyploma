@@ -1,5 +1,5 @@
-import { IsNumber } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 
 export class NearbyJobsDto {
   @Type(() => Number)
@@ -13,4 +13,16 @@ export class NearbyJobsDto {
   @Type(() => Number)
   @IsNumber()
   maxDistance: string;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) {
+      return undefined;
+    }
+
+    return Array.isArray(value) ? value : [value];
+  })
+  @IsArray()
+  @IsString({ each: true })
+  category?: string[];
 }

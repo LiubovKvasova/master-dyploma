@@ -51,15 +51,25 @@ export class JobsService {
     const intDistance = Number.parseInt(maxDistance.toString());
     const radians = intDistance / EARTH_RADIUS;
 
-    const results = await this.jobModel
-      .find({
-        location: {
-          $near: [lat, lng],
-          $maxDistance: radians,
-        },
-      })
-      .exec();
+    type SearchQuery = {
+      location: object;
+      category?: object;
+    }
 
+    const searchQuery: SearchQuery = {
+      location: {
+        $near: [lat, lng],
+        $maxDistance: radians,
+      },
+    };
+
+    if (query.category) {
+      searchQuery.category = {
+        $in: query.category
+      };
+    }
+
+    const results = await this.jobModel.find(searchQuery).exec();
     return results.map((doc) => doc.toObject());
   }
 }

@@ -6,6 +6,13 @@ import { MapContainer, TileLayer, Marker, Tooltip, Circle, useMap } from 'react-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { JOB_CATEGORIES } from '@/lib/constants';
 import { apiFetch } from '@/lib/api';
 import { SCALE } from '@/lib/constants';
 import { getCategoryName } from '@/lib/utils';
@@ -36,6 +43,7 @@ export function JobSearch({ user }: JobSearchProps) {
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [maxDistance, setMaxDistance] = useState<number>(1000);
   const [searchRadius, setSearchRadius] = useState<number | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const listRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   if (user?.role !== 'worker') {
@@ -49,9 +57,17 @@ export function JobSearch({ user }: JobSearchProps) {
   const handleSearch = async () => {
     const [lat, lng] = user.coordinates as [number, number];
 
-    const res = await apiFetch(
-      `/jobs/nearby?lat=${lat}&lng=${lng}&maxDistance=${maxDistance}`
-    );
+    const params = new URLSearchParams({
+      lat: String(lat),
+      lng: String(lng),
+      maxDistance: String(maxDistance),
+    });
+
+    for (const category of selectedCategories) {
+      params.append('category', category);
+    }
+
+    const res = await apiFetch(`/jobs/nearby?${params.toString()}`);
 
     if (res.ok) {
       const data = await res.json();
@@ -75,18 +91,70 @@ export function JobSearch({ user }: JobSearchProps) {
     }
   };
 
+  const toggleCategory = (value: string) => {
+    if (selectedCategories.includes(value)) {
+      setSelectedCategories(selectedCategories.filter((category) => category !== value));
+    } else {
+      setSelectedCategories([...selectedCategories, value]);
+    }
+  };
+
   return (
     <div className="flex gap-6 p-6">
       <div className="w-1/2 overflow-y-auto max-h-[90vh] flex flex-col gap-4">
         {/* форма пошуку */}
-        <div className="flex gap-2 mb-4">
-          <Input
-            type="number"
-            value={maxDistance}
-            onChange={(e) => setMaxDistance(Number(e.target.value))}
-            placeholder="Макс. відстань (м)"
-          />
-          <Button onClick={handleSearch}>Пошук</Button>
+        <div className="flex flex-col gap-2 mb-4">
+          <div className="flex gap-2">
+            <Input
+              type="number"
+              value={maxDistance}
+              onChange={(e) => setMaxDistance(Number(e.target.value))}
+              placeholder="Макс. відстань (м)"
+            />
+            <Button onClick={handleSearch}>Пошук</Button>
+          </div>
+
+          {/* фільтр по категоріях */}
+          <div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  Обрати категорії
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-full">
+                {JOB_CATEGORIES.filter(
+                  (cat) => !selectedCategories.includes(cat.value)
+                ).map((cat) => (
+                  <DropdownMenuItem
+                    key={cat.value}
+                    onClick={() => toggleCategory(cat.value)}
+                  >
+                    {cat.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* обрані категорії (pill buttons) */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              {selectedCategories.map((value) => {
+                const cat = JOB_CATEGORIES.find((c) => c.value === value);
+                if (!cat) return null;
+                return (
+                  <Button
+                    key={value}
+                    variant="secondary"
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => toggleCategory(value)}
+                  >
+                    {cat.label} ✕
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {jobs.map((job) => (
