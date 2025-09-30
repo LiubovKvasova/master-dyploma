@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Tooltip, Circle, useMap } from 'react-leaflet';
+import { ChevronDown } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -44,6 +46,7 @@ export function JobSearch({ user }: JobSearchProps) {
   const [maxDistance, setMaxDistance] = useState<number>(1000);
   const [searchRadius, setSearchRadius] = useState<number | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState<boolean>(false);
   const listRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   if (user?.role !== 'worker') {
@@ -104,22 +107,25 @@ export function JobSearch({ user }: JobSearchProps) {
       <div className="w-1/2 overflow-y-auto max-h-[90vh] flex flex-col gap-4">
         {/* форма пошуку */}
         <div className="flex flex-col gap-2 mb-4">
-          <div className="flex gap-2">
+          <div className="mb-4">
+            <Label htmlFor="duration">Відстань, м</Label>
             <Input
               type="number"
               value={maxDistance}
               onChange={(e) => setMaxDistance(Number(e.target.value))}
               placeholder="Макс. відстань (м)"
             />
-            <Button onClick={handleSearch}>Пошук</Button>
           </div>
 
           {/* фільтр по категоріях */}
-          <div>
-            <DropdownMenu>
+          <div className="mb-4">
+            <DropdownMenu open={categoryMenuOpen} onOpenChange={setCategoryMenuOpen}>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-full">
-                  Обрати категорії
+                  <span>Категорія роботи</span>
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${categoryMenuOpen ? "rotate-180" : ""}`}
+                  />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-full">
@@ -154,7 +160,10 @@ export function JobSearch({ user }: JobSearchProps) {
                 );
               })}
             </div>
+
           </div>
+
+          <Button className="w-1/2 self-center" onClick={handleSearch}>Пошук</Button>
         </div>
 
         {jobs.map((job) => (
