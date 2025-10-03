@@ -34,8 +34,9 @@ export class CreateJobDto {
 
   @IsObject()
   duration: {
-    representation: string; // "3 години"
-    value: number; // у секундах
+    hoursPerDay: number;
+    daysPerWeek: number;
+    weeks: number;
   };
 
   @IsNumber()

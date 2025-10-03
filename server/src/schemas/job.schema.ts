@@ -2,12 +2,15 @@ import { Schema, type HydratedDocument } from 'mongoose';
 import AddressSchema from './address.schema';
 
 export const DurationSchema = new Schema({
-  representation: {
-    type: String,
+  hoursPerDay: {
+    type: Number,
     required: true,
   },
-  value: {
-    // in seconds
+  daysPerWeek: {
+    type: Number,
+    required: true,
+  },
+  weeks: {
     type: Number,
     required: true,
   },

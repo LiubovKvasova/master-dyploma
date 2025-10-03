@@ -25,7 +25,11 @@ type Job = {
   description: string;
   category: string;
   hourRate: number;
-  duration: { representation: string; value: number };
+  duration: {
+    hoursPerDay: number;
+    daysPerWeek: number;
+    weeks: number;
+  };
   coordinates: [number, number]; // [lng, lat]
 
   // Calculated for Leaflet environment
@@ -179,7 +183,7 @@ export function JobSearch({ user }: JobSearchProps) {
                 <p>{job.description}</p>
                 <p>Категорія: {getCategoryName(job.category)}</p>
                 <p>Ставка: {job.hourRate} грн/год</p>
-                <p>Тривалість: {job.duration.representation}</p>
+                <p>Тривалість: {JSON.stringify(job.duration)}</p>
 
                 {typeof job.distance === 'number' && (
                   <p>Відстань: {Math.round(job.distance)} м</p>
