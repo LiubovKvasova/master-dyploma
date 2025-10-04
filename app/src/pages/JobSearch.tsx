@@ -14,10 +14,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox'; // якщо ще не імпортований
 import { JOB_CATEGORIES } from '@/lib/constants';
 import { apiFetch } from '@/lib/api';
 import { SCALE } from '@/lib/constants';
 import { getCategoryName } from '@/lib/utils';
+import { formatDuration } from '@/lib/language';
 
 type Job = {
   _id: string;
@@ -51,6 +53,7 @@ export function JobSearch({ user }: JobSearchProps) {
   const [searchRadius, setSearchRadius] = useState<number | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categoryMenuOpen, setCategoryMenuOpen] = useState<boolean>(false);
+  const [selectedDurations, setSelectedDurations] = useState<string[]>([]);
   const listRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   if (user?.role !== 'worker') {
@@ -72,6 +75,10 @@ export function JobSearch({ user }: JobSearchProps) {
 
     for (const category of selectedCategories) {
       params.append('category', category);
+    }
+
+    for (const duraton of selectedDurations) {
+      params.append('duration', duraton);
     }
 
     const res = await apiFetch(`/jobs/nearby?${params.toString()}`);
@@ -104,6 +111,14 @@ export function JobSearch({ user }: JobSearchProps) {
     } else {
       setSelectedCategories([...selectedCategories, value]);
     }
+  };
+
+  const toggleDuration = (value: string) => {
+    setSelectedDurations((prev) =>
+      prev.includes(value)
+        ? prev.filter((d) => d !== value)
+        : [...prev, value]
+    );
   };
 
   return (
@@ -164,7 +179,36 @@ export function JobSearch({ user }: JobSearchProps) {
                 );
               })}
             </div>
+          </div>
 
+          {/* фільтр по тривалості */}
+          <div className="mb-4">
+            <Label>Тривалість</Label>
+            <div className="flex flex-col gap-2 mt-2">
+              <label className="flex items-center gap-2">
+                <Checkbox
+                  checked={selectedDurations.includes("day")}
+                  onCheckedChange={() => toggleDuration("day")}
+                />
+                <span>В межах дня</span>
+              </label>
+
+              <label className="flex items-center gap-2">
+                <Checkbox
+                  checked={selectedDurations.includes("week")}
+                  onCheckedChange={() => toggleDuration("week")}
+                />
+                <span>В межах тижня</span>
+              </label>
+
+              <label className="flex items-center gap-2">
+                <Checkbox
+                  checked={selectedDurations.includes("weeks")}
+                  onCheckedChange={() => toggleDuration("weeks")}
+                />
+                <span>Кілька тижнів</span>
+              </label>
+            </div>
           </div>
 
           <Button className="w-1/2 self-center" onClick={handleSearch}>Пошук</Button>
@@ -180,13 +224,28 @@ export function JobSearch({ user }: JobSearchProps) {
                 <CardTitle>{job.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{job.description}</p>
-                <p>Категорія: {getCategoryName(job.category)}</p>
-                <p>Ставка: {job.hourRate} грн/год</p>
-                <p>Тривалість: {JSON.stringify(job.duration)}</p>
+                <p className="mb-4">{job.description}</p>
+
+                <p className="mb-1">
+                  <strong>Категорія:</strong>
+                  <span className="ml-1">{getCategoryName(job.category)}</span>
+                </p>
+
+                <p className="mb-1">
+                  <strong>Ставка:</strong>
+                  <span className="ml-1">{job.hourRate} грн/год</span>
+                </p>
+
+                <p className="mb-1">
+                  <strong>Тривалість:</strong>
+                  <span className="ml-1">{formatDuration(job.duration)}</span>
+                </p>
 
                 {typeof job.distance === 'number' && (
-                  <p>Відстань: {Math.round(job.distance)} м</p>
+                  <p>
+                    <strong>Відстань:</strong>
+                    <span className="ml-1">{Math.round(job.distance)} м</span>
+                  </p>
                 )}
               </CardContent>
             </Card>

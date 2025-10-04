@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { apiFetch } from '@/lib/api';
 import { CENTER_OF_UKRAINE, SCALE } from '@/lib/constants';
 import { getCategoryName } from '@/lib/utils';
+import { formatDuration } from '@/lib/language';
 
 type Job = {
   _id: string;
@@ -73,10 +74,23 @@ export function EmployerJobs({ user }: EmployerJobsProps) {
                 <CardTitle>{job.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{job.description}</p>
-                <p>Категорія: {getCategoryName(job.category)}</p>
-                <p>Ставка: {job.hourRate} грн/год</p>
-                <p>Тривалість: {JSON.stringify(job.duration)}</p>
+                <p className="mb-4">{job.description}</p>
+
+                <p className="mb-1">
+                  <strong>Категорія:</strong>
+                  <span className="ml-1">{getCategoryName(job.category)}</span>
+                </p>
+
+                <p className="mb-1">
+                  <strong>Ставка:</strong>
+                  <span className="ml-1">{job.hourRate} грн/год</span>
+                </p>
+
+                <p className="mb-1">
+                  <strong>Тривалість:</strong>
+                  <span className="ml-1">{formatDuration(job.duration)}</span>
+                </p>
+
                 <Button
                   variant="destructive"
                   className="mt-2"

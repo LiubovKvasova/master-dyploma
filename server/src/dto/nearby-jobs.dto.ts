@@ -1,5 +1,7 @@
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString, IsIn } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
+
+type JobDuration = 'day' | 'week' | 'weeks';
 
 export class NearbyJobsDto {
   @Type(() => Number)
@@ -25,4 +27,16 @@ export class NearbyJobsDto {
   @IsArray()
   @IsString({ each: true })
   category?: string[];
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) {
+      return undefined;
+    }
+
+    return Array.isArray(value) ? value : [value];
+  })
+  @IsArray()
+  @IsIn(['day', 'week', 'weeks'], { each: true })
+  duration?: JobDuration[];
 }

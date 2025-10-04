@@ -32,3 +32,26 @@ export const formatWord = (word: keyof typeof wordForms, amount: number) => {
   const rule = pluralRules.select(amount);
   return `${amount} ${forms[rule]}`;
 };
+
+export const formatDuration = ({
+  hoursPerDay,
+  daysPerWeek,
+  weeks,
+}: {
+  hoursPerDay: number;
+  daysPerWeek: number;
+  weeks: number;
+}) => {
+  if (daysPerWeek === 1 && weeks === 1) {
+    // тільки години
+    return formatWord("hour", hoursPerDay);
+  }
+
+  if (weeks === 1) {
+    // кілька днів, але не кілька тижнів
+    return `${formatWord("day", daysPerWeek)}, ${formatWord("hour", hoursPerDay)} на день`;
+  }
+
+  // кілька тижнів
+  return `${formatWord("week", weeks)}, ${formatWord("day", daysPerWeek)} на тиждень, ${formatWord("hour", hoursPerDay)} на день`;
+};
