@@ -10,6 +10,7 @@ import { UserSettings } from '@/pages/UserSettings';
 import { LocationPicker } from '@/pages/LocationPicker';
 import { CreateJob } from '@/pages/CreateJob';
 import { JobSearch } from '@/pages/JobSearch';
+import { UserInfo } from '@/pages/UserInfo';
 
 import { apiFetch } from '@/lib/api';
 import * as storageHelper from '@/lib/storageHelper';
@@ -59,11 +60,12 @@ const App = () => {
                 <Route path="/" element={<Home user={user} />} />
                 <Route path="/login" element={<Login onLogin={handleLogin} />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/settings" element={<UserSettings user={user} setUser={setUser} />}></Route>
-                <Route path="/location" element={<LocationPicker user={user} setUser={setUser} />}></Route>
-                <Route path="/create-job" element={<CreateJob user={user} />}></Route>
-                <Route path="/myjobs" element={<EmployerJobs user={user} />}></Route>
-                <Route path="/search-job" element={<JobSearch user={user} />}></Route>
+                <Route path="/settings" element={<UserSettings user={user} setUser={setUser} />} />
+                <Route path="/location" element={<LocationPicker user={user} setUser={setUser} />} />
+                <Route path="/create-job" element={<CreateJob user={user} />} />
+                <Route path="/myjobs" element={<EmployerJobs user={user} />} />
+                <Route path="/search-job" element={<JobSearch user={user} />} />
+                <Route path="/user-info/:userId" element={<UserInfo />} />
               </Routes>
             </BrowserRouter>
           )

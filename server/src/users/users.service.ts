@@ -95,4 +95,11 @@ export class UsersService {
 
     return user;
   }
+
+  async showInfo(userId: string) {
+    return this.userModel
+      .findById(userId)
+      .select('username email rating role')
+      .exec();
+  }
 }

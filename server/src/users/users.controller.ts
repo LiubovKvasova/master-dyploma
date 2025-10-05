@@ -1,11 +1,14 @@
 import {
   Controller,
+  Get,
   Post,
   Put,
   Request,
   Body,
   BadRequestException,
   UseGuards,
+  Param,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from 'src/dto/create-user.dto';
@@ -53,5 +56,16 @@ export class UsersController {
   @Put('update/location')
   updateLocation(@Request() req, @Body() dto: UpdateLocationDto) {
     return this.usersService.updateLocation(req.user._id, dto);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get(':userId')
+  async showUserInfo(@Param('userId') userId: string) {
+    const user = await this.usersService.showInfo(userId);
+    if (!user) {
+      throw new NotFoundException('User was not found');
+    }
+
+    return user;
   }
 }

@@ -99,7 +99,11 @@ export class JobsService {
       }
     }
 
-    const results = await this.jobModel.find(searchQuery).exec();
+    const results = await this.jobModel
+      .find(searchQuery)
+      .populate('owner', 'username email rating')
+      .exec();
+
     return results.map((doc) => doc.toObject());
   }
 }

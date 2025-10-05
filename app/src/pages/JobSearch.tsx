@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Tooltip, Circle, useMap } from 'react-leaflet';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, User } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,11 @@ type Job = {
     weeks: number;
   };
   coordinates: [number, number]; // [lng, lat]
+  owner: {
+    id: string;
+    username: string;
+    email: string;
+  };
 
   // Calculated for Leaflet environment
   distance?: number;
@@ -246,6 +251,18 @@ export function JobSearch({ user }: JobSearchProps) {
                     <strong>Відстань:</strong>
                     <span className="ml-1">{Math.round(job.distance)} м</span>
                   </p>
+                )}
+
+                {job.owner && (
+                  <div className="flex items-center gap-2 mt-3 text-sm">
+                    <User className="h-4 w-4" />
+                    <Link
+                      to={`/user-info/${job.owner.id}`}
+                      className="hover:text-blue-400 transition-colors"
+                    >
+                      {job.owner.username} ({job.owner.email})
+                    </Link>
+                  </div>
                 )}
               </CardContent>
             </Card>
