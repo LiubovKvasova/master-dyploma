@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Tooltip, Circle, useMap } from 'react-leaflet';
-import { ChevronDown, User } from 'lucide-react';
+import { ChevronDown, User, MapPin } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,34 +14,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
-import { Checkbox } from '@/components/ui/checkbox'; // якщо ще не імпортований
+import { Checkbox } from '@/components/ui/checkbox';
 import { JOB_CATEGORIES } from '@/lib/constants';
 import { apiFetch } from '@/lib/api';
 import { SCALE } from '@/lib/constants';
-import { getCategoryName } from '@/lib/utils';
+import { getCategoryName, stringifyAddress } from '@/lib/utils';
 import { formatDuration } from '@/lib/language';
-
-type Job = {
-  _id: string;
-  title: string;
-  description: string;
-  category: string;
-  hourRate: number;
-  duration: {
-    hoursPerDay: number;
-    daysPerWeek: number;
-    weeks: number;
-  };
-  coordinates: [number, number]; // [lng, lat]
-  owner: {
-    id: string;
-    username: string;
-    email: string;
-  };
-
-  // Calculated for Leaflet environment
-  distance?: number;
-};
 
 type JobSearchProps = {
   user: {
@@ -97,8 +75,9 @@ export function JobSearch({ user }: JobSearchProps) {
           const distance = L.latLng(lat, lng).distanceTo(
             L.latLng(job.coordinates[0], job.coordinates[1])
           );
+          const fullAddress = stringifyAddress(job.address);
 
-          return { ...job, distance };
+          return { ...job, distance, fullAddress };
         })
         .filter((job: Job) => job.distance! <= maxDistance);
 
@@ -252,6 +231,13 @@ export function JobSearch({ user }: JobSearchProps) {
                     <span className="ml-1">{Math.round(job.distance)} м</span>
                   </p>
                 )}
+
+                <div className="flex items-center gap-2 mt-3 text-sm">
+                  <MapPin className="h-4 w-4" />
+                  <span>
+                    {job.fullAddress}
+                  </span>
+                </div>
 
                 {job.owner && (
                   <div className="flex items-center gap-2 mt-3 text-sm">

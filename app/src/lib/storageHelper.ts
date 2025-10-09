@@ -15,7 +15,7 @@ export const getUser = async (): Promise<object | null> => {
     return null;
   }
 
-  return JSON.parse(user.value);
+  return JSON.parse(user.value!);
 };
 
 export const updateUser = async (newOptions: object) => {
@@ -25,7 +25,7 @@ export const updateUser = async (newOptions: object) => {
     return;
   }
 
-  const parsedUser = JSON.parse(user.value);
+  const parsedUser = JSON.parse(user.value!);
   const updatedUser = Object.assign(parsedUser, newOptions);
 
   const expires = user.expires;

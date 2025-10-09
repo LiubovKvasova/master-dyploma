@@ -1,27 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Tooltip, useMap } from 'react-leaflet';
+import { MapPin } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { apiFetch } from '@/lib/api';
 import { CENTER_OF_UKRAINE, SCALE } from '@/lib/constants';
-import { getCategoryName } from '@/lib/utils';
+import { getCategoryName, stringifyAddress } from '@/lib/utils';
 import { formatDuration } from '@/lib/language';
-
-type Job = {
-  _id: string;
-  title: string;
-  description: string;
-  category: string;
-  hourRate: number;
-  duration: {
-    hoursPerDay: number;
-    daysPerWeek: number;
-    weeks: number;
-  };
-  coordinates: [number, number]; // [lng, lat]
-};
 
 type EmployerJobsProps = {
   user: {
@@ -39,8 +26,14 @@ export function EmployerJobs({ user }: EmployerJobsProps) {
   useEffect(() => {
     (async () => {
       const res = await apiFetch('/jobs/my');
-      const data = await res.json();
-      setJobs(data);
+      const data: Job[] = await res.json();
+
+      const restructuredData = data.map((job) => {
+        const fullAddress = stringifyAddress(job.address);
+        return { ...job, fullAddress };
+      });
+
+      setJobs(restructuredData);
     })();
   }, []);
 
@@ -91,9 +84,16 @@ export function EmployerJobs({ user }: EmployerJobsProps) {
                   <span className="ml-1">{formatDuration(job.duration)}</span>
                 </p>
 
+                <div className="flex items-center gap-2 mt-3 text-sm">
+                  <MapPin className="h-4 w-4" />
+                  <span>
+                    {job.fullAddress}
+                  </span>
+                </div>
+
                 <Button
                   variant="destructive"
-                  className="mt-2"
+                  className="mt-6"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDelete(job._id);

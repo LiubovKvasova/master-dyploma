@@ -28,3 +28,38 @@ interface Window {
     delete(name: string): Promise<void>;
   };
 }
+
+type JobAddress = {
+  city: string;
+  road: string;
+  house_number?: string;
+  building?: string;
+  amenity?: string;
+};
+
+type Job = {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  hourRate: number;
+
+  duration: {
+    hoursPerDay: number;
+    daysPerWeek: number;
+    weeks: number;
+  };
+
+  coordinates: [number, number]; // [lng, lat]
+  owner: {
+    id: string;
+    username: string;
+    email: string;
+  };
+
+  address: JobAddress;
+  fullAddress: string;
+
+  // Calculated for Leaflet environment
+  distance?: number;
+};

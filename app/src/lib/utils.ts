@@ -17,3 +17,13 @@ export const getCategoryName = (categoryId: string): string => {
   const category = JOB_CATEGORIES.find((category) => category.value === categoryId);
   return category?.label ?? categoryId;
 };
+
+export const stringifyAddress = (address: JobAddress): string => [
+    address.city,
+    address.road,
+    address.house_number,
+    address.building,
+    address.amenity
+  ]
+  .filter((field) => typeof field === 'string')
+  .join(', ');
