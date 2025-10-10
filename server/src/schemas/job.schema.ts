@@ -1,4 +1,4 @@
-import { Schema, type HydratedDocument } from 'mongoose';
+import { Schema, type InferSchemaType } from 'mongoose';
 import AddressSchema from './address.schema';
 
 export const DurationSchema = new Schema({
@@ -46,11 +46,22 @@ export const JobSchema = new Schema({
     type: Number,
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['active', 'in_progress', 'closed'],
+    default: 'active',
+    required: true,
+    index: true,
+  },
   owner: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
     index: true,
+  },
+  selectedWorker: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
   },
 });
 
@@ -65,4 +76,4 @@ JobSchema.set('toObject', {
   },
 });
 
-export type JobDocument = HydratedDocument<typeof JobSchema>;
+export type JobDocument = InferSchemaType<typeof JobSchema>;

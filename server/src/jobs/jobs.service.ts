@@ -55,7 +55,7 @@ export class JobsService {
       location: object;
       category?: object;
       $or?: object[];
-    }
+    };
 
     const searchQuery: SearchQuery = {
       location: {
@@ -66,12 +66,14 @@ export class JobsService {
 
     if (query.category) {
       searchQuery.category = {
-        $in: query.category
+        $in: query.category,
       };
     }
 
     if (query.duration && query.duration.length > 0) {
-      const duration = Array.isArray(query.duration) ? query.duration : [query.duration];
+      const duration = Array.isArray(query.duration)
+        ? query.duration
+        : [query.duration];
       const orConditions: object[] = [];
 
       if (duration.includes('day')) {
