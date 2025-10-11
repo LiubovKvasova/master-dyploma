@@ -53,6 +53,8 @@ export const ApplicationSchema = new Schema({
   messages: {
     type: [MessageSchema],
   },
+}, {
+  timestamps: true
 });
 
 export type ApplicationDocument = InferSchemaType<typeof ApplicationSchema>;

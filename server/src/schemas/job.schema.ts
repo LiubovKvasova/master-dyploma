@@ -1,5 +1,6 @@
 import { Schema, type InferSchemaType } from 'mongoose';
 import AddressSchema from './address.schema';
+import LocationSchema from './location.schema';
 
 export const DurationSchema = new Schema({
   hoursPerDay: {
@@ -29,8 +30,8 @@ export const JobSchema = new Schema({
     required: true,
   },
   location: {
-    type: [Number],
-    index: '2d',
+    type: LocationSchema,
+    index: '2dsphere',
   },
   coordinates: {
     type: [Number],
@@ -63,12 +64,14 @@ export const JobSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+}, {
+  timestamps: true
 });
 
 JobSchema.set('toObject', {
   virtuals: true,
   transform: (_doc, ret) => {
-    const coordinates = ret.location?.slice();
+    const coordinates = ret.location?.coordinates?.slice();
 
     if (coordinates) {
       ret.coordinates = coordinates;

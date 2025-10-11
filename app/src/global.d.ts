@@ -59,6 +59,7 @@ type Job = {
 
   address: JobAddress;
   fullAddress: string;
+  hasApplied?: boolean;
 
   // Calculated for Leaflet environment
   distance?: number;

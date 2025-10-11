@@ -21,6 +21,7 @@ export const JOB_CATEGORIES = [
   { value: "car-services", label: "Автопослуги" },
   { value: "admin-help", label: "Адміністративна допомога" },
   { value: "promo", label: "Розклеювання/розповсюдження реклами" },
+  { value: 'other', label: 'Інше' },
 ];
 
 export const ADDRESS_FIELDS = [

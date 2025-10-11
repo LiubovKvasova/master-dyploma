@@ -44,7 +44,8 @@ export class JobsController {
   }
 
   @Get('nearby')
-  async nearby(@Query() query: NearbyJobsDto) {
-    return this.jobsService.findNearby(query);
+  async nearby(@Query() query: NearbyJobsDto, @Request() req) {
+    const userId = req.user._id;
+    return this.jobsService.findNearby(query, userId);
   }
 }

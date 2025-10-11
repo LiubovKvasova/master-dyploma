@@ -89,6 +89,28 @@ export function JobSearch({ user }: JobSearchProps) {
     }
   };
 
+  const handleApply = async (jobId: string) => {
+    if (!jobId) return;
+
+    try {
+      const res = await apiFetch('/applications', {
+        method: 'POST',
+        body: JSON.stringify({ jobId }),
+      });
+
+      if (res.ok) {
+        alert('Ваша заявка успішно відправлена!');
+        await handleSearch();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert(`Помилка: ${data.message || 'Не вдалося подати заявку'}`);
+      }
+    } catch (error) {
+      console.error('Помилка при подачі заявки:', error);
+      alert('Не вдалося з’єднатися з сервером');
+    }
+  };
+
   const toggleCategory = (value: string) => {
     if (selectedCategories.includes(value)) {
       setSelectedCategories(selectedCategories.filter((category) => category !== value));
@@ -250,6 +272,23 @@ export function JobSearch({ user }: JobSearchProps) {
                     </Link>
                   </div>
                 )}
+
+                {/* кнопка "Відгукнутись" */}
+                <div className="mt-4">
+                  {job.hasApplied ? (
+                    <Button className="w-full" disabled variant="secondary">
+                      Ви уже відгукнулись
+                    </Button>
+                  ) : (
+                    <Button
+                      className="w-full"
+                      onClick={() => handleApply(job._id)}
+                      disabled={!job._id}
+                    >
+                      Відгукнутись на вакансію
+                    </Button>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>

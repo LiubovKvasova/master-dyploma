@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import type { Model } from 'mongoose';
+import { Types, type Model } from 'mongoose';
 
 import { JobDocument } from 'src/schemas/job.schema';
 import { CreateJobDto } from 'src/dto/create-job.dto';
@@ -15,7 +15,7 @@ export class JobsService {
 
     const job = new this.jobModel({
       ...restOfDto,
-      location: coordinates,
+      location: { type: 'Point', coordinates },
       owner: userId,
     });
 
@@ -44,7 +44,7 @@ export class JobsService {
     return this.jobModel.findByIdAndDelete(id).exec();
   }
 
-  async findNearby(query: NearbyJobsDto) {
+  async findNearby(query: NearbyJobsDto, userId: string) {
     const { lng, lat, maxDistance } = query;
     const EARTH_RADIUS = 63781.37;
 
@@ -52,15 +52,21 @@ export class JobsService {
     const radians = intDistance / EARTH_RADIUS;
 
     type SearchQuery = {
+      status: string;
       location: object;
       category?: object;
       $or?: object[];
     };
 
     const searchQuery: SearchQuery = {
+      status: 'active',
       location: {
-        $near: [lat, lng],
-        $maxDistance: radians,
+        $geoWithin: {
+          $centerSphere: [
+            [lat, lng].map((value) => parseFloat(value)),
+            radians
+          ],
+        },
       },
     };
 
@@ -101,11 +107,51 @@ export class JobsService {
       }
     }
 
-    const results = await this.jobModel
-      .find(searchQuery)
-      .populate('owner', 'username email rating')
-      .exec();
+    const results = await this.jobModel.aggregate([
+      { $match: searchQuery },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'owner',
+          foreignField: '_id',
+          as: 'owner',
+        },
+      },
+      { $unwind: '$owner' },
+      {
+        $lookup: {
+          from: 'applications',
+          let: { jobId: '$_id' },
+          pipeline: [{
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: [ '$jobId', '$$jobId' ] },
+                  { $eq: [ '$workerId', new Types.ObjectId(userId) ] },
+                ],
+              },
+            },
+          }],
+          as: 'userApplication'
+        },
+      },
+      {
+        $addFields: {
+          hasApplied: {
+            $gt: [{ $size: '$userApplication' }, 0]
+          },
+          coordinates: '$location.coordinates'
+        },
+      },
+      {
+        $project: {
+          userApplication: 0,
+          'owner.hash': 0,
+          'owner.salt': 0
+        }
+      }
+    ]);
 
-    return results.map((doc) => doc.toObject());
+    return results;
   }
 }
