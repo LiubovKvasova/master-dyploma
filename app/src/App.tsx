@@ -11,6 +11,8 @@ import { LocationPicker } from '@/pages/LocationPicker';
 import { CreateJob } from '@/pages/CreateJob';
 import { JobSearch } from '@/pages/JobSearch';
 import { UserInfo } from '@/pages/UserInfo';
+import { ApplicationsList } from '@/pages/ApplicationsList';
+import { ApplicationChat } from '@/pages/ApplicationChat';
 
 import { apiFetch } from '@/lib/api';
 import * as storageHelper from '@/lib/storageHelper';
@@ -66,6 +68,8 @@ const App = () => {
                 <Route path="/myjobs" element={<EmployerJobs user={user} />} />
                 <Route path="/search-job" element={<JobSearch user={user} />} />
                 <Route path="/user-info/:userId" element={<UserInfo />} />
+                <Route path="/applications" element={<ApplicationsList user={user} />} />
+                <Route path="/applications/:applicationId" element={<ApplicationChat user={user} />} />
               </Routes>
             </BrowserRouter>
           )

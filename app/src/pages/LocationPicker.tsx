@@ -51,8 +51,6 @@ export const LocationPicker = ({ user, setUser }: { user: any, setUser: Dispatch
     }
   };
 
-  console.log({ coords, address });
-
   return (
     <div className="p-4">
       <h1 className="text-xl mb-4">Налаштування розміщення</h1>

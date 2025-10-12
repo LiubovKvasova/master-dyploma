@@ -71,6 +71,12 @@ export const Navbar = ({ user, onLogout }: { user: any; onLogout: () => void }) 
                       Пошук
                     </Link>
                   </MenuItem>
+
+                  <MenuItem>
+                    <Link to="/applications">
+                      Заявки
+                    </Link>
+                  </MenuItem>
                 </>
             }
 

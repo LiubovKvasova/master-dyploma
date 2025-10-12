@@ -43,21 +43,18 @@ export class ApplicationsService {
     return application.save();
   }
 
-  async initChat(applicationId: string, employerId: string) {
-    const application = await this.applicationModel
-      .findById(applicationId)
-      .populate('workerId', 'username email')
-      .populate('employerId', 'username email');
+  async getApplications(userId: string, role: string) {
+    const fieldId = (role === 'employer') ? 'employerId' : 'workerId';
 
-    if (!application) {
-      throw new NotFoundException('The application was not found');
-    }
+    const applications = await this.applicationModel
+      .find({ [fieldId]: userId })
+      .populate({
+        path: 'jobId',
+        populate: { path: 'owner', select: 'username email' },
+      })
+      .populate('messages.sender', 'username email');
 
-    if (String(application.employerId._id) !== employerId) {
-      throw new ForbiddenException('You have no rights to initialize the chat');
-    }
-
-    return application;
+    return applications;
   }
 
   async addMessage(applicationId: string, senderId: string, content: string) {
@@ -83,6 +80,10 @@ export class ApplicationsService {
   async getMessages(applicationId: string, userId: string) {
     const application = await this.applicationModel
       .findById(applicationId)
+      .populate({
+        path: 'jobId',
+        populate: { path: 'owner', select: 'username email' },
+      })
       .populate('messages.sender', 'username email');
 
     if (!application) {
@@ -97,7 +98,7 @@ export class ApplicationsService {
       throw new ForbiddenException('You have to access to the chat');
     }
 
-    return application.messages;
+    return application;
   }
 
   async agree(applicationId: string, userId: string) {

@@ -18,12 +18,14 @@ export class ApplicationsController {
     return this.service.create(req.user.id, body.jobId);
   }
 
-  @Get(':applicationId/init-chat')
-  initChat(@Param('applicationId') id: string, @Req() req) {
-    return this.service.initChat(id, req.user.id);
+  @Get()
+  getApplications(@Req() req) {
+    const userId = req.user.id;
+    const role = req.user.role;
+    return this.service.getApplications(userId, role);
   }
 
-  @Post(':applicationId/messages')
+  @Post('messages/:applicationId')
   addMessage(
     @Param('applicationId') id: string,
     @Req() req,
@@ -32,22 +34,22 @@ export class ApplicationsController {
     return this.service.addMessage(id, req.user.id, content);
   }
 
-  @Get(':applicationId/messages')
+  @Get('messages/:applicationId')
   getMessages(@Param('applicationId') id: string, @Req() req) {
     return this.service.getMessages(id, req.user.id);
   }
 
-  @Patch(':applicationId/agree')
+  @Patch('agree/:applicationId')
   agree(@Param('applicationId') id: string, @Req() req) {
     return this.service.agree(id, req.user.id);
   }
 
-  @Patch(':applicationId/close')
+  @Patch('close/:applicationId')
   close(@Param('applicationId') id: string, @Req() req) {
     return this.service.closeApplication(id, req.user.id);
   }
 
-  @Patch(':applicationId/reopen')
+  @Patch('reopen/:applicationId')
   reopen(@Param('applicationId') id: string, @Req() req) {
     return this.service.reopenApplication(id, req.user.id);
   }
