@@ -5,7 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ApplicationDocument } from 'src/schemas/application.schema';
 import { JobDocument } from 'src/schemas/job.schema';
 
@@ -43,16 +43,72 @@ export class ApplicationsService {
     return application.save();
   }
 
-  async getApplications(userId: string, role: string) {
-    const fieldId = (role === 'employer') ? 'employerId' : 'workerId';
-
+  async getApplications(userId: string) {
     const applications = await this.applicationModel
-      .find({ [fieldId]: userId })
+      .find({ workerId: userId })
       .populate({
         path: 'jobId',
         populate: { path: 'owner', select: 'username email' },
       })
-      .populate('messages.sender', 'username email');
+      .populate('messages.sender', 'username email')
+      .sort({ updatedAt: -1 });
+
+    return applications;
+  }
+
+  async getEmployerApplications(userId: string) {
+    const applications = await this.jobModel.aggregate([
+      { $match: { owner: new Types.ObjectId(userId) } },
+      {
+        $lookup: {
+          from: 'applications',
+          let: { jobId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: [ '$jobId', '$$jobId' ] },
+                    { $eq: [ '$employerId', new Types.ObjectId(userId) ] },
+                  ],
+                },
+              },
+            },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'workerId',
+                foreignField: '_id',
+                as: 'workerData'
+              }
+            },
+            {
+              $unwind: {
+                path: '$workerData',
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $project: {
+                jobId: 1,
+                workerId: 1,
+                employerId: 1,
+                workerAgreed: 1,
+                employerAgreed: 1,
+                status: 1,
+                messages: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                'workerData._id': 1,
+                'workerData.username': 1,
+                'workerData.email': 1
+              }
+            }
+          ],
+          as: 'applications'
+        },
+      },
+    ]);
 
     return applications;
   }
@@ -79,12 +135,7 @@ export class ApplicationsService {
 
   async getMessages(applicationId: string, userId: string) {
     const application = await this.applicationModel
-      .findById(applicationId)
-      .populate({
-        path: 'jobId',
-        populate: { path: 'owner', select: 'username email' },
-      })
-      .populate('messages.sender', 'username email');
+      .findById(applicationId);
 
     if (!application) {
       throw new NotFoundException('The application was not found');
@@ -97,6 +148,10 @@ export class ApplicationsService {
     if (!isParticipant) {
       throw new ForbiddenException('You have to access to the chat');
     }
+
+    await application.populate('jobId', 'title');
+    await application.populate('workerId', 'username email');
+    await application.populate('employerId', 'username email');
 
     return application;
   }

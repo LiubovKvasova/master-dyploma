@@ -5,7 +5,6 @@ import { uk } from 'date-fns/locale';
 
 import { apiFetch } from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 
 type ApplicationsListProps = {
   user: {
@@ -45,6 +44,10 @@ export function ApplicationsList({ user }: ApplicationsListProps) {
     return <Navigate to="/login" replace />;
   }
 
+  if (user.role !== 'worker') {
+    return <Navigate to="/employer-applications" replace />;
+  }
+
   if (loading) {
     return <p>Завантаження...</p>;
   }
@@ -72,9 +75,7 @@ export function ApplicationsList({ user }: ApplicationsListProps) {
           <Card
             key={app._id}
             onClick={() => navigate(`/applications/${app._id}`)}
-            className={cn(
-              'p-3 hover:bg-muted/30 cursor-pointer transition-colors relative'
-            )}
+            className="p-3 hover:bg-muted/30 cursor-pointer transition-colors relative"
           >
             <CardContent className="p-0">
               {/* Верхній рядок */}

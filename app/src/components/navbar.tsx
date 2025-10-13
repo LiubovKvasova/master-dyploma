@@ -60,6 +60,12 @@ export const Navbar = ({ user, onLogout }: { user: any; onLogout: () => void }) 
                       Мої оголошення
                     </Link>
                   </MenuItem>
+
+                  <MenuItem>
+                    <Link to="/employer-applications">
+                      Заявки
+                    </Link>
+                  </MenuItem>
                 </>
             }
 

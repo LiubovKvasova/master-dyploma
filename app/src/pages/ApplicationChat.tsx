@@ -22,10 +22,6 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const fetchMessages = async () => {
-    if (!user) {
-      return;
-    }
-
     const res = await apiFetch(`/applications/messages/${applicationId}`);
     if (res.ok) {
       const data = await res.json();
@@ -37,13 +33,20 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
   };
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
+
     fetchMessages();
+
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
   }, [applicationId]);
 
   // автопрокрутка донизу після кожного оновлення
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [application]);
+  }, [application?.messages?.length]);
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -75,12 +78,16 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
     return <p>Заявку не знайдено</p>;
   }
 
+  const addresseeName = (user.role === 'employer') ?
+    application?.workerId?.username :
+    application?.employerId?.username;
+
   return (
     <div className="flex flex-col h-[90vh] max-w-3xl mx-auto p-4">
       {/* Верхній блок з кнопкою "До всіх" */}
       <div className="flex items-center mb-4">
         <Link
-          to="/applications"
+          to={user.role === 'employer' ? '/employer-applications' : '/applications'}
           className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-400 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -89,7 +96,7 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
       </div>
 
       <h2 className="text-xl font-semibold mb-2">
-        {application.jobId?.title} — {application.jobId?.owner?.username}
+        {application.jobId?.title} — {addresseeName}
       </h2>
 
       <Card className="flex-1 overflow-y-auto p-3 space-y-3">
@@ -100,7 +107,7 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
         )}
 
         {application.messages.map((msg: any) => {
-          const isOwn = msg.sender._id === user.id;
+          const isOwn = msg.sender === user.id;
           return (
             <div
               key={msg._id}

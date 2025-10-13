@@ -22,7 +22,12 @@ export class ApplicationsController {
   getApplications(@Req() req) {
     const userId = req.user.id;
     const role = req.user.role;
-    return this.service.getApplications(userId, role);
+
+    if (role === 'employer') {
+      return this.service.getEmployerApplications(userId);
+    }
+
+    return this.service.getApplications(userId);
   }
 
   @Post('messages/:applicationId')

@@ -13,6 +13,7 @@ import { JobSearch } from '@/pages/JobSearch';
 import { UserInfo } from '@/pages/UserInfo';
 import { ApplicationsList } from '@/pages/ApplicationsList';
 import { ApplicationChat } from '@/pages/ApplicationChat';
+import { EmployerApplications } from '@/pages/EmployerApplications';
 
 import { apiFetch } from '@/lib/api';
 import * as storageHelper from '@/lib/storageHelper';
@@ -70,6 +71,7 @@ const App = () => {
                 <Route path="/user-info/:userId" element={<UserInfo />} />
                 <Route path="/applications" element={<ApplicationsList user={user} />} />
                 <Route path="/applications/:applicationId" element={<ApplicationChat user={user} />} />
+                <Route path="/employer-applications" element={<EmployerApplications user={user} />} />
               </Routes>
             </BrowserRouter>
           )
