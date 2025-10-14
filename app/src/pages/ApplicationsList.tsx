@@ -84,9 +84,24 @@ export function ApplicationsList({ user }: ApplicationsListProps) {
                   <p className="font-semibold">
                     {app.jobId?.owner?.username || 'Невідомий'} — {app.jobId?.title}
                   </p>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {displayMessage}
-                  </p>
+
+                  {app.status === 'in_progress' ? (
+                    <p className="text-sm text-green-600">
+                      ✅ Співпраця розпочата
+                    </p>
+                  ) : app.status === 'closed' ? (
+                    <p className="text-sm text-green-700">
+                      ✅ Діяльність завершено успішно
+                    </p>
+                  ) : app.status === 'failed' ? (
+                    <p className="text-sm text-red-600">
+                      ❌ Діяльність завершено з провалом
+                    </p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground truncate">
+                      {displayMessage}
+                    </p>
+                  )}
                 </div>
 
                 {/* Дата */}

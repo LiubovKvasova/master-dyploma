@@ -19,6 +19,7 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
   const [application, setApplication] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState('');
+  const [agreeLoading, setAgreeLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const fetchMessages = async () => {
@@ -70,6 +71,20 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
     }
   };
 
+  const handleAgree = async () => {
+    setAgreeLoading(true);
+    const res = await apiFetch(`/applications/agree/${applicationId}`, {
+      method: 'PATCH',
+    });
+    setAgreeLoading(false);
+
+    if (res.ok) {
+      await fetchMessages();
+    } else {
+      alert('Не вдалося погодитись на співпрацю');
+    }
+  };
+
   if (loading) {
     return <p>Завантаження...</p>;
   }
@@ -81,6 +96,10 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
   const addresseeName = (user.role === 'employer') ?
     application?.workerId?.username :
     application?.employerId?.username;
+
+  const hasAgreed = (user.role === 'employer') ?
+    application.employerAgreed :
+    application.workerAgreed;
 
   return (
     <div className="flex flex-col h-[90vh] max-w-3xl mx-auto p-4">
@@ -95,9 +114,39 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
         </Link>
       </div>
 
-      <h2 className="text-xl font-semibold mb-2">
-        {application.jobId?.title} — {addresseeName}
-      </h2>
+      <div className="flex flex-row justify-between">
+        <h2 className="text-xl font-semibold mb-2">
+          {application.jobId?.title} — {addresseeName}
+        </h2>
+
+        {application.status === 'in_progress' ? (
+          <p className="text-green-600 font-medium mb-2">
+            ✅ Співпраця розпочата
+          </p>
+        ) : application.status === 'closed' ? (
+          <p className="text-green-700 font-medium mb-2">
+            ✅ Діяльність завершено успішно
+          </p>
+        ) : application.status === 'failed' ? (
+          <p className="text-red-600 font-medium mb-2">
+            ❌ Діяльність завершено з провалом
+          </p>
+        ) : (
+          <div className="mb-3">
+            <Button
+              onClick={handleAgree}
+              disabled={hasAgreed || agreeLoading}
+              variant={hasAgreed ? 'ghost' : 'default'}
+            >
+              {hasAgreed
+                ? 'Ви погодились на співпрацю'
+                : agreeLoading
+                ? 'Обробка...'
+                : 'Погодитись на співпрацю'}
+            </Button>
+          </div>
+        )}
+      </div>
 
       <Card className="flex-1 overflow-y-auto p-3 space-y-3">
         {application.messages.length === 0 && (

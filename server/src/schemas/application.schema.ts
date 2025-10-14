@@ -45,7 +45,7 @@ export const ApplicationSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ['active', 'in_progress', 'closed'],
+    enum: ['active', 'in_progress', 'closed', 'failed'],
     default: 'active',
     required: true,
     index: true,

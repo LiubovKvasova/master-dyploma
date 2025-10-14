@@ -6,10 +6,14 @@ import {
   Param,
   Body,
   Req,
+  UseGuards,
 } from '@nestjs/common';
+
 import { ApplicationsService } from './applications.service';
+import { AuthenticatedGuard } from 'src/auth/auth.guard';
 
 @Controller('applications')
+@UseGuards(AuthenticatedGuard)
 export class ApplicationsController {
   constructor(private readonly service: ApplicationsService) {}
 
@@ -54,8 +58,8 @@ export class ApplicationsController {
     return this.service.closeApplication(id, req.user.id);
   }
 
-  @Patch('reopen/:applicationId')
-  reopen(@Param('applicationId') id: string, @Req() req) {
-    return this.service.reopenApplication(id, req.user.id);
+  @Patch('fail/:applicationId')
+  fail(@Param('applicationId') id: string, @Req() req) {
+    return this.service.failApplication(id, req.user.id);
   }
 }

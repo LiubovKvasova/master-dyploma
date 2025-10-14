@@ -89,6 +89,12 @@ export class ApplicationsService {
               }
             },
             {
+              $sort: {
+                status: -1,
+                updatedAt: -1,
+              }
+            },
+            {
               $project: {
                 jobId: 1,
                 workerId: 1,
@@ -210,19 +216,17 @@ export class ApplicationsService {
     return application;
   }
 
-  async reopenApplication(applicationId: string, employerId: string) {
+  async failApplication(applicationId: string, employerId: string) {
     const application = await this.applicationModel.findById(applicationId);
     if (!application) {
       throw new NotFoundException('The application was not found');
     }
 
     if (String(application.employerId) !== employerId) {
-      throw new ForbiddenException('Ви не можете перевідкрити цю заявку');
+      throw new ForbiddenException('You cannot fail this application');
     }
 
-    application.status = 'active';
-    application.workerAgreed = false;
-    application.employerAgreed = false;
+    application.status = 'failed';
     await application.save();
 
     await this.jobModel.findByIdAndUpdate(application.jobId, {

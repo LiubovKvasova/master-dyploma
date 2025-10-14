@@ -2,6 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { apiFetch } from '@/lib/api';
 import { formatDistanceToNow } from 'date-fns';
 import { uk } from 'date-fns/locale';
@@ -16,6 +25,8 @@ type EmployerApplicationsProps = {
 export function EmployerApplications({ user }: EmployerApplicationsProps) {
   const [jobs, setJobs] = useState<any[]>([]);
   const [expandedJobs, setExpandedJobs] = useState<Record<string, boolean>>({});
+  const [selectedApplication, setSelectedApplication] = useState<any | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   const fetchApplications = async () => {
@@ -56,6 +67,21 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
     return messages[messages.length - 1];
   };
 
+  const handleCloseJob = async (applicationId: string, reopen = false) => {
+    const route = reopen
+      ? `/applications/fail/${applicationId}`
+      : `/applications/close/${applicationId}`;
+    const res = await apiFetch(route, { method: 'PATCH' });
+
+    if (res.ok) {
+      setDialogOpen(false);
+      setSelectedApplication(null);
+      await fetchApplications();
+    } else {
+      alert('Не вдалося оновити статус діяльності');
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4 p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Заявки на ваші оголошення</h1>
@@ -65,24 +91,59 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
       )}
 
       {jobs.map((job) => (
-        <Card key={job._id} className="m-2 hover:bg-muted/30 cursor-pointer transition-colors relative">
-          <CardHeader
-            className="flex flex-row justify-between items-center cursor-pointer"
-            onClick={() => toggleExpand(job._id)}
-          >
-            <div>
+        <Card
+          key={job._id}
+          className="m-2 hover:bg-muted/30 cursor-pointer transition-colors relative"
+        >
+          <CardHeader className="flex flex-row justify-between items-center cursor-pointer">
+            <div onClick={() => toggleExpand(job._id)}>
               <CardTitle className="text-lg">{job.title}</CardTitle>
               <p className="text-sm">{job.description}</p>
             </div>
-            {expandedJobs[job._id] ? <ChevronUp /> : <ChevronDown />}
+
+            <div className="flex items-center gap-2">
+              {job.status === 'in_progress' && (
+                <Button
+                  variant="outline"
+                  className="text-red-600 border-red-600 hover:bg-red-100"
+                  onClick={() => {
+                    const appInProgress = job.applications.find(
+                      (a: any) => a.status === 'in_progress'
+                    );
+                    if (appInProgress) {
+                      setSelectedApplication(appInProgress);
+                      setDialogOpen(true);
+                    }
+                  }}
+                >
+                  Завершити діяльність
+                </Button>
+              )}
+
+              {job.status === 'closed' && (
+                <Button variant="outline" disabled className="text-red-500 border-red-500">
+                  Роботу завершено
+                </Button>
+              )}
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => toggleExpand(job._id)}
+              >
+                {expandedJobs[job._id] ? <ChevronUp /> : <ChevronDown />}
+              </Button>
+            </div>
           </CardHeader>
 
-          <div className={cn(
-            'transition-[max-height,opacity] ease-in-out overflow-hidden',
-             expandedJobs[job._id] ?
-              'max-h-[1000px] opacity-100 duration-500' :
-              'max-h-0 opacity-0 duration-300'
-          )}>
+          <div
+            className={cn(
+              'transition-[max-height,opacity] ease-in-out overflow-hidden',
+              expandedJobs[job._id]
+                ? 'max-h-[1000px] opacity-100 duration-500'
+                : 'max-h-0 opacity-0 duration-300'
+            )}
+          >
             <CardContent className="flex flex-col gap-3 border-t pt-3">
               {job.applications.length === 0 && (
                 <p className="text-gray-500 italic">Наразі ніхто не подав заявку.</p>
@@ -93,6 +154,15 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
                 const lastEventDate = lastMessage
                   ? new Date(lastMessage.timestamp)
                   : new Date(app.createdAt);
+
+                const statusLabel =
+                  app.status === 'in_progress'
+                    ? '✅ Співпраця розпочата'
+                    : app.status === 'closed'
+                    ? '✅ Діяльність завершено успішно'
+                    : app.status === 'failed'
+                    ? '❌ Діяльність завершено з провалом'
+                    : null;
 
                 return (
                   <div
@@ -105,8 +175,19 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
                         <User className="w-4 h-4" />
                         {app.workerData?.username || 'Невідомий користувач'}
                       </p>
-                      <p className="text-sm mt-1">
-                        {lastMessage ? (
+
+                      <div className="text-sm mt-1">
+                        {statusLabel ? (
+                          <p
+                            className={cn(
+                              'font-medium',
+                              app.status === 'failed' && 'text-red-600',
+                              app.status === 'closed' && 'text-green-600'
+                            )}
+                          >
+                            {statusLabel}
+                          </p>
+                        ) : lastMessage ? (
                           <>
                             <span className="font-semibold">
                               {lastMessage.sender === app.workerId
@@ -119,7 +200,7 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
                         ) : (
                           <span className="italic">Без повідомлень</span>
                         )}
-                      </p>
+                      </div>
                     </div>
 
                     <p className="text-xs text-gray-500 whitespace-nowrap ml-4">
@@ -135,6 +216,34 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
           </div>
         </Card>
       ))}
+
+      {/* Діалог завершення діяльності */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Завершення діяльності</DialogTitle>
+            <DialogDescription>
+              Чи була робота задовільною?
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex justify-between">
+            <Button
+              variant="default"
+              onClick={() => handleCloseJob(selectedApplication._id, false)}
+            >
+              Так, закрити оголошення
+            </Button>
+
+            <Button
+              variant="destructive"
+              onClick={() => handleCloseJob(selectedApplication._id, true)}
+            >
+              Ні, перевідкрити оголошення
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
