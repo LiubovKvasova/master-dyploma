@@ -93,9 +93,12 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
     return <p>Заявку не знайдено</p>;
   }
 
-  const addresseeName = (user.role === 'employer') ?
-    application?.workerId?.username :
-    application?.employerId?.username;
+  const addressee = (user.role === 'employer') ?
+    application?.workerId :
+    application?.employerId;
+
+  const addresseeName = addressee?.username;
+  const addresseeId = addressee?._id;
 
   const hasAgreed = (user.role === 'employer') ?
     application.employerAgreed :
@@ -116,7 +119,13 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
 
       <div className="flex flex-row justify-between">
         <h2 className="text-xl font-semibold mb-2">
-          {application.jobId?.title} — {addresseeName}
+          {application.jobId?.title} — {' '}
+          <Link
+            to={`/user-info/${addresseeId}`}
+            className="hover:text-blue-400 transition-colors"
+          >
+            {addresseeName}
+          </Link>
         </h2>
 
         {application.status === 'in_progress' ? (

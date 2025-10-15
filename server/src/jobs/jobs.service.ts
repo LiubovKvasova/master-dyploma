@@ -53,6 +53,7 @@ export class JobsService {
 
     type SearchQuery = {
       status: string;
+      owner: object;
       location: object;
       category?: object;
       $or?: object[];
@@ -60,11 +61,14 @@ export class JobsService {
 
     const searchQuery: SearchQuery = {
       status: 'active',
+      owner: {
+        $ne: new Types.ObjectId(userId),
+      },
       location: {
         $geoWithin: {
           $centerSphere: [
             [lat, lng].map((value) => parseFloat(value)),
-            radians
+            radians,
           ],
         },
       },
@@ -122,34 +126,36 @@ export class JobsService {
         $lookup: {
           from: 'applications',
           let: { jobId: '$_id' },
-          pipeline: [{
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: [ '$jobId', '$$jobId' ] },
-                  { $eq: [ '$workerId', new Types.ObjectId(userId) ] },
-                ],
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$jobId', '$$jobId'] },
+                    { $eq: ['$workerId', new Types.ObjectId(userId)] },
+                  ],
+                },
               },
             },
-          }],
-          as: 'userApplication'
+          ],
+          as: 'userApplication',
         },
       },
       {
         $addFields: {
           hasApplied: {
-            $gt: [{ $size: '$userApplication' }, 0]
+            $gt: [{ $size: '$userApplication' }, 0],
           },
-          coordinates: '$location.coordinates'
+          coordinates: '$location.coordinates',
         },
       },
       {
         $project: {
           userApplication: 0,
           'owner.hash': 0,
-          'owner.salt': 0
-        }
-      }
+          'owner.salt': 0,
+        },
+      },
     ]);
 
     return results;

@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsIn,
   MinLength,
+  IsPhoneNumber,
 } from 'class-validator';
 
 export class CreateUserDto {
@@ -15,6 +16,12 @@ export class CreateUserDto {
 
   @MinLength(8)
   password: string;
+
+  @IsPhoneNumber('UA')
+  phone: string;
+
+  @IsNotEmpty()
+  fullname: string;
 
   @IsOptional()
   @IsIn(['worker', 'employer'])

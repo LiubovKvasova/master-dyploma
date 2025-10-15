@@ -71,6 +71,10 @@ export function ApplicationsList({ user }: ApplicationsListProps) {
           ? new Date(lastMessage.timestamp)
           : new Date(app.createdAt);
 
+        const username = (app.jobId?.owner) ?
+          `${app.jobId.owner.fullname} (${app.jobId.owner.username})` :
+          'Невідомий';
+
         return (
           <Card
             key={app._id}
@@ -82,7 +86,7 @@ export function ApplicationsList({ user }: ApplicationsListProps) {
               <div className="flex justify-between items-start">
                 <div>
                   <p className="font-semibold">
-                    {app.jobId?.owner?.username || 'Невідомий'} — {app.jobId?.title}
+                    {username} — {app.jobId?.title}
                   </p>
 
                   {app.status === 'in_progress' ? (

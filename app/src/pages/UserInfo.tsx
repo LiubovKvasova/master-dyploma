@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, User, Mail, Star, Shield } from 'lucide-react';
+import { Loader2, User, Mail, Star, Shield, PhoneIcon } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 
 type UserInfoType = {
   username: string;
   email: string;
+  phone: string;
+  fullname: string;
   role: string;
   rating?: number;
 };
@@ -69,7 +71,7 @@ export function UserInfo() {
       <Card className="w-full max-w-md shadow-md border">
         <CardHeader className="flex flex-col items-center text-center">
           <User className="w-12 h-12 text-primary mb-2" />
-          <CardTitle className="text-xl font-semibold">{user.username}</CardTitle>
+          <CardTitle className="text-xl font-semibold">{user.fullname} ({user.username})</CardTitle>
           <p className="text-sm text-muted-foreground">ID: {userId}</p>
         </CardHeader>
 
@@ -77,6 +79,11 @@ export function UserInfo() {
           <div className="flex items-center gap-2">
             <Mail className="w-5 h-5 text-muted-foreground" />
             <span>{user.email}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <PhoneIcon className="w-5 h-5 text-muted-foreground" />
+            <span>{user.phone}</span>
           </div>
 
           <div className="flex items-center gap-2">

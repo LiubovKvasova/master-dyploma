@@ -164,6 +164,10 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
                     ? '❌ Діяльність завершено з провалом'
                     : null;
 
+                const username = (app.workerData) ?
+                  `${app.workerData.fullname} (${app.workerData.username})` :
+                  'Невідомий користувач';
+
                 return (
                   <div
                     key={app._id}
@@ -173,7 +177,7 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
                     <div>
                       <p className="font-medium flex items-center gap-2">
                         <User className="w-4 h-4" />
-                        {app.workerData?.username || 'Невідомий користувач'}
+                        {username}
                       </p>
 
                       <div className="text-sm mt-1">

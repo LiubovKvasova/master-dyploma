@@ -23,8 +23,8 @@ export class UsersService {
   ) {}
 
   async register(createUserDto: CreateUserDto) {
-    const { email, username, password, role } = createUserDto;
-    const user = new this.userModel({ email, username });
+    const { email, username, password, phone, fullname, role } = createUserDto;
+    const user = new this.userModel({ email, username, phone, fullname });
     await this.userModel.register(user, password);
 
     if (role) {
@@ -99,7 +99,7 @@ export class UsersService {
   async showInfo(userId: string) {
     return this.userModel
       .findById(userId)
-      .select('username email rating role')
+      .select('username email rating role phone fullname')
       .exec();
   }
 }

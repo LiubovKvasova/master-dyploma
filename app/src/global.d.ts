@@ -53,7 +53,10 @@ type Job = {
   coordinates: [number, number]; // [lng, lat]
   owner: {
     id: string;
+    _id: string;
     username: string;
+    phone: string;
+    fullname: string;
     email: string;
   };
 

@@ -13,6 +13,8 @@ import * as storageHelper from '@/lib/storageHelper';
 export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<any> }) => {
   const [username, setUsername] = useState(user?.username);
   const [email, setEmail] = useState(user?.email);
+  const [phone, setPhone] = useState(user?.phone);
+  const [fullname, setFullname] = useState(user?.fullname);
 
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -29,7 +31,7 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
 
     const res = await apiFetch('/users/update', {
       method: 'PUT',
-      body: JSON.stringify({ username, email }),
+      body: JSON.stringify({ username, email, phone, fullname }),
     });
 
     if (res.ok) {
@@ -90,6 +92,14 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
             <div className="grid gap-2">
               <Label htmlFor="email">Електронна пошта</Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="phone">Номер телефону</Label>
+              <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="fullname">Повне ім'я</Label>
+              <Input id="fullname" type="fullname" value={fullname} onChange={(e) => setFullname(e.target.value)} />
             </div>
             <CardFooter>
               <Button type="submit">Зберегти</Button>

@@ -16,45 +16,48 @@ export const MessageSchema = new Schema({
   },
 });
 
-export const ApplicationSchema = new Schema({
-  jobId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Job',
-    required: true,
-    index: true,
+export const ApplicationSchema = new Schema(
+  {
+    jobId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Job',
+      required: true,
+      index: true,
+    },
+    workerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+    employerId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+    workerAgreed: {
+      type: Boolean,
+      default: false,
+    },
+    employerAgreed: {
+      type: Boolean,
+      default: false,
+    },
+    status: {
+      type: String,
+      enum: ['active', 'in_progress', 'closed', 'failed'],
+      default: 'active',
+      required: true,
+      index: true,
+    },
+    messages: {
+      type: [MessageSchema],
+    },
   },
-  workerId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-    index: true,
+  {
+    timestamps: true,
   },
-  employerId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-    index: true,
-  },
-  workerAgreed: {
-    type: Boolean,
-    default: false,
-  },
-  employerAgreed: {
-    type: Boolean,
-    default: false,
-  },
-  status: {
-    type: String,
-    enum: ['active', 'in_progress', 'closed', 'failed'],
-    default: 'active',
-    required: true,
-    index: true,
-  },
-  messages: {
-    type: [MessageSchema],
-  },
-}, {
-  timestamps: true
-});
+);
 
 export type ApplicationDocument = InferSchemaType<typeof ApplicationSchema>;

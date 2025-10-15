@@ -48,9 +48,9 @@ export class ApplicationsService {
       .find({ workerId: userId })
       .populate({
         path: 'jobId',
-        populate: { path: 'owner', select: 'username email' },
+        populate: { path: 'owner', select: 'username email phone fullname' },
       })
-      .populate('messages.sender', 'username email')
+      .populate('messages.sender', 'username email phone fullname')
       .sort({ updatedAt: -1 });
 
     return applications;
@@ -68,8 +68,8 @@ export class ApplicationsService {
               $match: {
                 $expr: {
                   $and: [
-                    { $eq: [ '$jobId', '$$jobId' ] },
-                    { $eq: [ '$employerId', new Types.ObjectId(userId) ] },
+                    { $eq: ['$jobId', '$$jobId'] },
+                    { $eq: ['$employerId', new Types.ObjectId(userId)] },
                   ],
                 },
               },
@@ -79,20 +79,20 @@ export class ApplicationsService {
                 from: 'users',
                 localField: 'workerId',
                 foreignField: '_id',
-                as: 'workerData'
-              }
+                as: 'workerData',
+              },
             },
             {
               $unwind: {
                 path: '$workerData',
-                preserveNullAndEmptyArrays: true
-              }
+                preserveNullAndEmptyArrays: true,
+              },
             },
             {
               $sort: {
                 status: -1,
                 updatedAt: -1,
-              }
+              },
             },
             {
               $project: {
@@ -107,11 +107,12 @@ export class ApplicationsService {
                 updatedAt: 1,
                 'workerData._id': 1,
                 'workerData.username': 1,
-                'workerData.email': 1
-              }
-            }
+                'workerData.email': 1,
+                'workerData.fullname': 1,
+              },
+            },
           ],
-          as: 'applications'
+          as: 'applications',
         },
       },
     ]);
@@ -140,8 +141,7 @@ export class ApplicationsService {
   }
 
   async getMessages(applicationId: string, userId: string) {
-    const application = await this.applicationModel
-      .findById(applicationId);
+    const application = await this.applicationModel.findById(applicationId);
 
     if (!application) {
       throw new NotFoundException('The application was not found');
@@ -156,8 +156,8 @@ export class ApplicationsService {
     }
 
     await application.populate('jobId', 'title');
-    await application.populate('workerId', 'username email');
-    await application.populate('employerId', 'username email');
+    await application.populate('workerId', 'username email phone fullname');
+    await application.populate('employerId', 'username email phone fullname');
 
     return application;
   }
@@ -180,9 +180,7 @@ export class ApplicationsService {
     }
 
     if (!changed)
-      throw new ForbiddenException(
-        'You have no rights to agree for this job',
-      );
+      throw new ForbiddenException('You have no rights to agree for this job');
 
     if (application.workerAgreed && application.employerAgreed) {
       application.status = 'in_progress';

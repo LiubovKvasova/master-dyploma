@@ -14,6 +14,14 @@ const UserSchema = new Schema({
     required: true,
     unique: true,
   },
+  phone: {
+    type: String,
+    required: true,
+  },
+  fullname: {
+    type: String,
+    required: true,
+  },
   role: {
     type: String,
     enum: ['employer', 'worker'],

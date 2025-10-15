@@ -265,10 +265,10 @@ export function JobSearch({ user }: JobSearchProps) {
                   <div className="flex items-center gap-2 mt-3 text-sm">
                     <User className="h-4 w-4" />
                     <Link
-                      to={`/user-info/${job.owner.id}`}
+                      to={`/user-info/${job.owner._id}`}
                       className="hover:text-blue-400 transition-colors"
                     >
-                      {job.owner.username} ({job.owner.email})
+                      {job.owner.fullname} ({job.owner.username})
                     </Link>
                   </div>
                 )}

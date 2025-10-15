@@ -10,13 +10,15 @@ export const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [fullname, setFullname] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = await apiFetch('/users/register', {
       method: 'POST',
-      body: JSON.stringify({ username, email, password }),
+      body: JSON.stringify({ username, email, password, phone, fullname }),
     });
 
     if (res.ok) {
@@ -44,6 +46,17 @@ export const Register = () => {
             placeholder="Електронна пошта"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+          <Input
+            placeholder="Номер телефону"
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+          <Input
+            placeholder="Повне ім'я"
+            value={fullname}
+            onChange={(e) => setFullname(e.target.value)}
           />
           <Input
             type="password"
