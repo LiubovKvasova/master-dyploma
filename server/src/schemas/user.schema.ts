@@ -30,6 +30,10 @@ const UserSchema = new Schema({
   rating: {
     type: Number,
   },
+  ratingCount: {
+    type: Number,
+    default: 0,
+  },
   location: {
     type: LocationSchema,
   },

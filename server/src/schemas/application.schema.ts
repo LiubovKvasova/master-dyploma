@@ -1,20 +1,21 @@
 import { Schema, type InferSchemaType } from 'mongoose';
 
-export const MessageSchema = new Schema({
-  sender: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+export const MessageSchema = new Schema(
+  {
+    sender: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
   },
-  content: {
-    type: String,
-    required: true,
+  {
+    timestamps: true,
   },
-  timestamp: {
-    type: Date,
-    default: Date.now(),
-  },
-});
+);
 
 export const ApplicationSchema = new Schema(
   {

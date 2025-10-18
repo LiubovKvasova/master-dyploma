@@ -68,7 +68,7 @@ export function ApplicationsList({ user }: ApplicationsListProps) {
           : <i>Ви подали заявку</i>;
 
         const lastEventDate = lastMessage
-          ? new Date(lastMessage.timestamp)
+          ? new Date(lastMessage.createdAt)
           : new Date(app.createdAt);
 
         const username = (app.jobId?.owner) ?

@@ -42,6 +42,10 @@ export function CreateJob({ user }: CreateJobProps) {
     return <Navigate to="/" replace />;
   }
 
+  if (!user.coordinates || user.coordinates.length < 2) {
+    return <Navigate to="/location" replace />;
+  }
+
   const handleSelect = async (coordinates: [number, number]) => {
     setCoords(coordinates);
 

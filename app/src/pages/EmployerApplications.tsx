@@ -152,7 +152,7 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
               {job.applications.map((app: any) => {
                 const lastMessage = getLastMessage(app.messages);
                 const lastEventDate = lastMessage
-                  ? new Date(lastMessage.timestamp)
+                  ? new Date(lastMessage.createdAt)
                   : new Date(app.createdAt);
 
                 const statusLabel =

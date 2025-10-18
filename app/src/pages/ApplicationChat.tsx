@@ -180,7 +180,7 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
               >
                 <p className="text-sm">{msg.content}</p>
                 <p className="text-xs opacity-70 text-right mt-1">
-                  {new Date(msg.timestamp).toLocaleString('uk-UA')}
+                  {new Date(msg.createdAt).toLocaleString('uk-UA')}
                 </p>
               </div>
             </div>
