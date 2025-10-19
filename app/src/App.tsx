@@ -61,7 +61,7 @@ const App = () => {
             <BrowserRouter>
               <Navbar user={user} onLogout={handleLogout} />
               <Routes>
-                <Route path="/" element={<Home user={user} />} />
+                <Route path="/" element={<Home user={user} setUser={setUser} />} />
                 <Route path="/login" element={<Login onLogin={handleLogin} />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/settings" element={<UserSettings user={user} setUser={setUser} />} />

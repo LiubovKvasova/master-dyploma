@@ -10,8 +10,10 @@ import {
   Param,
   NotFoundException,
 } from '@nestjs/common';
+
 import { UsersService } from './users.service';
 import { CreateUserDto } from 'src/dto/create-user.dto';
+import { OnboardingDto } from 'src/dto/onboarding.dto';
 import { UpdateLocationDto } from 'src/dto/update-location.dto';
 import { UpdatePasswordDto } from 'src/dto/update-password.dto';
 import { UpdateRoleDto } from 'src/dto/update-role.dto';
@@ -67,5 +69,11 @@ export class UsersController {
     }
 
     return user;
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Put('onboarding')
+  async onboardUser(@Request() req, @Body() dto: OnboardingDto) {
+    return this.usersService.onboardUser(req.user._id, dto);
   }
 }

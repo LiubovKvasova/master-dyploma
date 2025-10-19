@@ -43,6 +43,19 @@ const UserSchema = new Schema({
   address: {
     type: AddressSchema,
   },
+  introduced: {
+    type: Boolean,
+    default: false,
+  },
+  interestedCategories: {
+    type: [String],
+    default: [],
+  },
+  preferenceOrder: {
+    type: [String],
+    enum: ['distance', 'salary', 'categories', 'reputation'],
+    default: ['distance', 'salary', 'categories', 'reputation'],
+  },
 });
 
 UserSchema.plugin(passportLocalMongoose, {

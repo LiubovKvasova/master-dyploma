@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { PassportLocalModel } from 'mongoose';
 
 import { CreateUserDto } from 'src/dto/create-user.dto';
+import { OnboardingDto } from 'src/dto/onboarding.dto';
 import { UpdateLocationDto } from 'src/dto/update-location.dto';
 import { UpdatePasswordDto } from 'src/dto/update-password.dto';
 import { UpdateRoleDto } from 'src/dto/update-role.dto';
@@ -50,7 +51,7 @@ export class UsersService {
   async updatePassword(userId: string, dto: UpdatePasswordDto) {
     const user: any | null = await this.userModel.findById(userId);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('THe user was not found');
     }
 
     return new Promise((resolve, reject) => {
@@ -101,5 +102,39 @@ export class UsersService {
       .findById(userId)
       .select('username email rating role phone fullname')
       .exec();
+  }
+
+  async onboardUser(userId: string, dto: OnboardingDto) {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('The user was not found');
+    }
+
+    if (dto.interestedCategories) {
+      user.interestedCategories = dto.interestedCategories;
+    }
+
+    if (dto.coordinates) {
+      user.location = {
+        type: 'Point',
+        coordinates: dto.coordinates,
+      };
+    }
+
+    if (dto.address) {
+      user.address = dto.address;
+    }
+
+    if (dto.preferenceOrder) {
+      user.preferenceOrder = dto.preferenceOrder;
+    }
+
+    if (dto.introduced !== undefined) {
+      user.introduced = dto.introduced;
+    }
+
+    await user.save();
+    const object = user.toObject();
+    return filterOutKeys(object, unwantedKeys);
   }
 }
