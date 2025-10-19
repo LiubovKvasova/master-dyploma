@@ -22,25 +22,19 @@ export class ReviewsService {
 
   async createReview(authorId: string, dto: CreateReviewDto) {
     const { targetId, rating, comment } = dto;
+    const authorObjectId = new Types.ObjectId(authorId);
+    const targetObjectId = new Types.ObjectId(targetId);
 
     const interaction = await this.applicationModel.find({
-      $and: [
+      status: { $ne: 'active' },
+      $or: [
         {
-          $not: {
-            status: 'active',
-          },
+          employerId: authorObjectId,
+          workerId: targetObjectId,
         },
         {
-          $or: [
-            {
-              employerId: new Types.ObjectId(authorId),
-              workerId: new Types.ObjectId(targetId),
-            },
-            {
-              employerId: new Types.ObjectId(targetId),
-              workerId: new Types.ObjectId(authorId),
-            },
-          ],
+          employerId: targetObjectId,
+          workerId: authorObjectId,
         },
       ],
     });
@@ -113,10 +107,36 @@ export class ReviewsService {
         },
       },
       {
+        $lookup: {
+          from: 'reviews',
+          let: { targetUserId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$authorId', authorObjectId] },
+                    { $eq: ['$targetId', '$$targetUserId'] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'review',
+        },
+      },
+      {
+        $unwind: {
+          path: '$review',
+          preserveNullAndEmptyArrays: true, // щоб користувачі без відгуку теж залишались
+        },
+      },
+      {
         $project: {
           username: 1,
           email: 1,
           fullname: 1,
+          review: 1,
         },
       },
     ]);

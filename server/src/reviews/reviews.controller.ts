@@ -17,7 +17,7 @@ import { CreateReviewDto } from 'src/dto/create-review.dto';
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
-  @Post(':applicationId/:targetId')
+  @Post()
   async createReview(@Body() dto: CreateReviewDto, @Req() req: any) {
     return this.reviewsService.createReview(req.user.id, dto);
   }

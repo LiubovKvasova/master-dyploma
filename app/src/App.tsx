@@ -9,15 +9,16 @@ import { Register } from '@/pages/Register';
 import { UserSettings } from '@/pages/UserSettings';
 import { LocationPicker } from '@/pages/LocationPicker';
 import { CreateJob } from '@/pages/CreateJob';
+import { EmployerJobs } from '@/pages/EmployerJobs';
 import { JobSearch } from '@/pages/JobSearch';
 import { UserInfo } from '@/pages/UserInfo';
 import { ApplicationsList } from '@/pages/ApplicationsList';
 import { ApplicationChat } from '@/pages/ApplicationChat';
 import { EmployerApplications } from '@/pages/EmployerApplications';
+import { LeaveReview } from '@/pages/LeaveReview';
 
 import { apiFetch } from '@/lib/api';
 import * as storageHelper from '@/lib/storageHelper';
-import { EmployerJobs } from './pages/EmployerJobs';
 
 const App = () => {
   const [user, setUser] = useState<any>(null);
@@ -72,6 +73,7 @@ const App = () => {
                 <Route path="/applications" element={<ApplicationsList user={user} />} />
                 <Route path="/applications/:applicationId" element={<ApplicationChat user={user} />} />
                 <Route path="/employer-applications" element={<EmployerApplications user={user} />} />
+                <Route path="/leave-review" element={<LeaveReview user={user} />} />
               </Routes>
             </BrowserRouter>
           )

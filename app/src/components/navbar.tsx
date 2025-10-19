@@ -87,6 +87,12 @@ export const Navbar = ({ user, onLogout }: { user: any; onLogout: () => void }) 
             }
 
             <MenuItem>
+              <Link to="/leave-review">
+                Лишити відгук
+              </Link>
+            </MenuItem>
+
+            <MenuItem>
               <Link to="/settings">
                 Налаштування
               </Link>
