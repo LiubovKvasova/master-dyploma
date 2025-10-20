@@ -58,11 +58,18 @@ type Job = {
     phone: string;
     fullname: string;
     email: string;
+    rating: number;
   };
 
   address: JobAddress;
   fullAddress: string;
   hasApplied?: boolean;
+
+  score?: number;
+  salaryScore?: number;
+  distanceScore?: number;
+  categoryScore?: number;
+  reputationScore?: number;
 
   // Calculated for Leaflet environment
   distance?: number;

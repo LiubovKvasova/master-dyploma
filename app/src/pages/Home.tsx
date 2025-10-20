@@ -1,3 +1,4 @@
+import { JobRecommendations } from './JobRecommendations';
 import { OnboardingFlow } from './OnboardingFlow';
 
 export const Home = ({ user, setUser }: { user: any, setUser: any }) => {
@@ -16,6 +17,8 @@ export const Home = ({ user, setUser }: { user: any, setUser: any }) => {
       ) : (
         <OnboardingFlow user={user} setUser={setUser} />
       )}
+
+      {user?.introduced && <JobRecommendations user={user} />}
     </div>
   );
 }

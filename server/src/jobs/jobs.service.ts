@@ -5,10 +5,14 @@ import { Types, type Model } from 'mongoose';
 import { JobDocument } from 'src/schemas/job.schema';
 import { CreateJobDto } from 'src/dto/create-job.dto';
 import { NearbyJobsDto } from 'src/dto/nearby-jobs.dto';
+import { UserDocument } from 'src/schemas/user.schema';
 
 @Injectable()
 export class JobsService {
-  constructor(@InjectModel('Job') private jobModel: Model<JobDocument>) {}
+  constructor(
+    @InjectModel('Job') private jobModel: Model<JobDocument>,
+    @InjectModel('User') private userModel: Model<UserDocument>,
+  ) { }
 
   async create(dto: CreateJobDto, userId: string) {
     const { coordinates, ...restOfDto } = dto;
@@ -159,5 +163,113 @@ export class JobsService {
     ]);
 
     return results;
+  }
+
+  async getRecommendedJobsForUser(userId: string) {
+    const user = await this.userModel.findById(userId).lean();
+    if (!user || !user.location) return [];
+
+    // 1️⃣ Отримуємо ваги динамічно з preferenceOrder
+    const order = user.preferenceOrder ?? ['distance', 'salary', 'categories', 'reputation'];
+    const total = order.length;
+    const base = 1 / total;
+
+    const weights = order.reduce((acc, key, i) => {
+      acc[key] = (total - i) * base;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const maxSalaryDoc = await this.jobModel
+      .findOne({ status: 'active' })
+      .sort({ hourRate: -1 })
+      .select('hourRate')
+      .lean();
+
+    const maxSalary = maxSalaryDoc?.hourRate ?? 1;
+
+    // 2️⃣ Пайплайн
+    const jobs = await this.jobModel.aggregate([
+      {
+        $geoNear: {
+          near: user.location.coordinates as [number, number],
+          distanceField: 'distance',
+          distanceMultiplier: 200,
+          spherical: true,
+          query: { status: 'active' },
+        },
+      },
+
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'owner',
+          foreignField: '_id',
+          as: 'owner',
+        },
+      },
+      { $unwind: '$owner' },
+
+      {
+        $set: {
+          salaryScore: {
+            $divide: ['$hourRate', maxSalary],
+          },
+          distanceScore: {
+            $max: [{ $subtract: [1, '$distance'] }, 0],
+          },
+          categoryScore: {
+            $cond: [
+              { $in: ['$category', user.interestedCategories ?? []] },
+              1,
+              0,
+            ],
+          },
+          reputationScore: {
+            $divide: [{ $ifNull: ['$owner.rating', 0] }, 5],
+          },
+        },
+      },
+      {
+        $set: {
+          score: {
+            $add: [
+              { $multiply: ['$distanceScore', weights.distance ?? 0] },
+              { $multiply: ['$salaryScore', weights.salary ?? 0] },
+              { $multiply: ['$categoryScore', weights.categories ?? 0] },
+              { $multiply: ['$reputationScore', weights.reputation ?? 0] },
+            ],
+          },
+        },
+      },
+      { $sort: { score: -1 } },
+      { $limit: 30 },
+      {
+        $set: {
+          coordinates: '$location.coordinates'
+        }
+      },
+      {
+        $project: {
+          title: 1,
+          category: 1,
+          hourRate: 1,
+          duration: 1,
+          address: 1,
+
+          // Показати всі очки зваженої згортки
+          score: 1,
+          distanceScore: 1,
+          salaryScore: 1,
+          categoryScore: 1,
+          reputationScore: 1,
+
+          distance: 1,
+          coordinates: 1,
+          owner: { _id: 1, fullname: 1, rating: 1 },
+        },
+      },
+    ]);
+
+    return jobs;
   }
 }

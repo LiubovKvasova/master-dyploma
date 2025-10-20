@@ -48,4 +48,10 @@ export class JobsController {
     const userId = req.user._id;
     return this.jobsService.findNearby(query, userId);
   }
+
+  @Get('recommendations')
+  async getRecommendedJobs(@Request() req) {
+    const userId = req.user._id;
+    return this.jobsService.getRecommendedJobsForUser(userId);
+  }
 }

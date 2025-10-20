@@ -9,12 +9,15 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { apiFetch } from '@/lib/api';
 import * as storageHelper from '@/lib/storageHelper';
+import { DEFAULT_PREFERENCE_ORDER, PREFERENCE_LABELS } from '@/lib/constants';
+import { ReorderableList } from '@/components/reorderable-list';
 
 export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<any> }) => {
   const [username, setUsername] = useState(user?.username);
   const [email, setEmail] = useState(user?.email);
   const [phone, setPhone] = useState(user?.phone);
   const [fullname, setFullname] = useState(user?.fullname);
+  const [preferenceOrder, setPreferenceOrder] = useState(user?.preferenceOrder ?? DEFAULT_PREFERENCE_ORDER);
 
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -31,13 +34,13 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
 
     const res = await apiFetch('/users/update', {
       method: 'PUT',
-      body: JSON.stringify({ username, email, phone, fullname }),
+      body: JSON.stringify({ username, email, phone, fullname, preferenceOrder }),
     });
 
     if (res.ok) {
       const newUser = await res.json();
       await storageHelper.updateUser(newUser);
-      setUser((oldValue: object) => ({...oldValue, ...newUser}));
+      setUser((oldValue: object) => ({ ...oldValue, ...newUser }));
 
       alert('Профіль оновлено!');
     } else {
@@ -69,7 +72,7 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
     if (res.ok) {
       const newUser = await res.json();
       await storageHelper.updateUser(newUser);
-      setUser((oldValue: object) => ({...oldValue, ...newUser}));
+      setUser((oldValue: object) => ({ ...oldValue, ...newUser }));
 
       alert('Роль оновлено!');
     } else {
@@ -100,6 +103,10 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
             <div className="grid gap-2">
               <Label htmlFor="fullname">Повне ім'я</Label>
               <Input id="fullname" type="fullname" value={fullname} onChange={(e) => setFullname(e.target.value)} />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="fullname">Пріоритетність критеріїв</Label>
+              <ReorderableList className="text-sm" items={preferenceOrder} setItems={setPreferenceOrder} labels={PREFERENCE_LABELS} />
             </div>
             <CardFooter>
               <Button type="submit">Зберегти</Button>

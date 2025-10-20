@@ -45,3 +45,17 @@ export const SCALE = {
   COUNTRY: 6,
   BUILDING: 15,
 };
+
+export const DEFAULT_PREFERENCE_ORDER = [
+  'distance',
+  'salary',
+  'categories',
+  'reputation',
+];
+
+export const PREFERENCE_LABELS = {
+  distance: 'Мінімальна відстань від дому',
+  salary: 'Оплата праці',
+  categories: 'Відповідність категоріям',
+  reputation: 'Репутація роботодавця',
+};

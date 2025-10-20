@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { LocationSettings } from '@/components/location-settings';
 import { ReorderableList } from '@/components/reorderable-list';
 import { apiFetch } from '@/lib/api';
-import { JOB_CATEGORIES } from '@/lib/constants';
+import { JOB_CATEGORIES, DEFAULT_PREFERENCE_ORDER, PREFERENCE_LABELS } from '@/lib/constants';
 import { updateUser } from '@/lib/storageHelper';
 
 export function OnboardingFlow({ user, setUser }: { user: any, setUser: any }) {
@@ -22,12 +22,7 @@ export function OnboardingFlow({ user, setUser }: { user: any, setUser: any }) {
   const [step, setStep] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [locationData, setLocationData] = useState<any>(existingLocationData);
-  const [preferences, setPreferences] = useState([
-    'distance',
-    'salary',
-    'categories',
-    'reputation',
-  ]);
+  const [preferences, setPreferences] = useState(DEFAULT_PREFERENCE_ORDER);
   const [saving, setSaving] = useState(false);
 
   const handleNext = async () => {
@@ -100,7 +95,12 @@ export function OnboardingFlow({ user, setUser }: { user: any, setUser: any }) {
           <LocationSettings user={user} onChange={(data) => setLocationData(data)} />
         )}
 
-        {step === 3 && <ReorderableList items={preferences} setItems={setPreferences} />}
+        {step === 3 && (
+          <div>
+            <h3 className="text-center mb-3 font-semibold">Пріоритетність критеріїв</h3>
+            <ReorderableList items={preferences} setItems={setPreferences} labels={PREFERENCE_LABELS} />
+          </div>
+        )}
       </CardContent>
 
       <div className="flex justify-end mt-4">

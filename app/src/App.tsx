@@ -59,7 +59,10 @@ const App = () => {
             <p>Loading...</p>
           ) : (
             <BrowserRouter>
-              <Navbar user={user} onLogout={handleLogout} />
+              { user?.introduced !== false &&
+                <Navbar user={user} onLogout={handleLogout} />
+              }
+
               <Routes>
                 <Route path="/" element={<Home user={user} setUser={setUser} />} />
                 <Route path="/login" element={<Login onLogin={handleLogin} />} />

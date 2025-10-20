@@ -51,7 +51,7 @@ export class UsersService {
   async updatePassword(userId: string, dto: UpdatePasswordDto) {
     const user: any | null = await this.userModel.findById(userId);
     if (!user) {
-      throw new NotFoundException('THe user was not found');
+      throw new NotFoundException('The user was not found');
     }
 
     return new Promise((resolve, reject) => {
