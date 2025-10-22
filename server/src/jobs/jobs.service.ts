@@ -172,10 +172,9 @@ export class JobsService {
     // 1️⃣ Отримуємо ваги динамічно з preferenceOrder
     const order = user.preferenceOrder ?? ['distance', 'salary', 'categories', 'reputation'];
     const total = order.length;
-    const base = 1 / total;
 
     const weights = order.reduce((acc, key, i) => {
-      acc[key] = (total - i) * base;
+      acc[key] = (2 * (total - i)) / (total * (total + 1));
       return acc;
     }, {} as Record<string, number>);
 
