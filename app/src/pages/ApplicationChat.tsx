@@ -24,12 +24,14 @@ export function ApplicationChat({ user }: ApplicationChatProps) {
 
   const fetchMessages = async () => {
     const res = await apiFetch(`/applications/messages/${applicationId}`);
+
     if (res.ok) {
       const data = await res.json();
       setApplication(data);
     } else {
       alert('Не вдалося отримати повідомлення');
     }
+
     setLoading(false);
   };
 

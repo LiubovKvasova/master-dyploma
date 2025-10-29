@@ -2,19 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Tooltip, Circle, useMap } from 'react-leaflet';
-import { ChevronDown, User, MapPin } from 'lucide-react';
+import { User, MapPin } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
 import { Checkbox } from '@/components/ui/checkbox';
+import { MultiSelectDropdown } from '@/components/multiselect-dropdown';
 import { JOB_CATEGORIES } from '@/lib/constants';
 import { apiFetch } from '@/lib/api';
 import { SCALE } from '@/lib/constants';
@@ -35,7 +30,6 @@ export function JobSearch({ user }: JobSearchProps) {
   const [maxDistance, setMaxDistance] = useState<number>(1000);
   const [searchRadius, setSearchRadius] = useState<number | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [categoryMenuOpen, setCategoryMenuOpen] = useState<boolean>(false);
   const [selectedDurations, setSelectedDurations] = useState<string[]>([]);
   const listRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -111,14 +105,6 @@ export function JobSearch({ user }: JobSearchProps) {
     }
   };
 
-  const toggleCategory = (value: string) => {
-    if (selectedCategories.includes(value)) {
-      setSelectedCategories(selectedCategories.filter((category) => category !== value));
-    } else {
-      setSelectedCategories([...selectedCategories, value]);
-    }
-  };
-
   const toggleDuration = (value: string) => {
     setSelectedDurations((prev) =>
       prev.includes(value)
@@ -143,49 +129,13 @@ export function JobSearch({ user }: JobSearchProps) {
           </div>
 
           {/* фільтр по категоріях */}
-          <div className="mb-4">
-            <DropdownMenu open={categoryMenuOpen} onOpenChange={setCategoryMenuOpen}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full">
-                  <span>Категорія роботи</span>
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${categoryMenuOpen ? "rotate-180" : ""}`}
-                  />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-full">
-                {JOB_CATEGORIES.filter(
-                  (cat) => !selectedCategories.includes(cat.value)
-                ).map((cat) => (
-                  <DropdownMenuItem
-                    key={cat.value}
-                    onClick={() => toggleCategory(cat.value)}
-                  >
-                    {cat.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* обрані категорії (pill buttons) */}
-            <div className="flex flex-wrap gap-2 mt-2">
-              {selectedCategories.map((value) => {
-                const cat = JOB_CATEGORIES.find((c) => c.value === value);
-                if (!cat) return null;
-                return (
-                  <Button
-                    key={value}
-                    variant="secondary"
-                    size="sm"
-                    className="rounded-full"
-                    onClick={() => toggleCategory(value)}
-                  >
-                    {cat.label} ✕
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
+          <MultiSelectDropdown
+            label="Категорія роботи"
+            className="mb-4"
+            options={JOB_CATEGORIES}
+            values={selectedCategories}
+            setValues={setSelectedCategories}
+          />
 
           {/* фільтр по тривалості */}
           <div className="mb-4">

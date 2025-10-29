@@ -12,7 +12,7 @@ import { JOB_CATEGORIES, DEFAULT_PREFERENCE_ORDER, PREFERENCE_LABELS } from '@/l
 import { updateUser } from '@/lib/storageHelper';
 
 export function OnboardingFlow({ user, setUser }: { user: any, setUser: any }) {
-  let existingLocationData: any = {};
+  const existingLocationData: any = {};
 
   if (user?.coordinates?.length && user?.address) {
     existingLocationData.coordinates = user.coordinates;

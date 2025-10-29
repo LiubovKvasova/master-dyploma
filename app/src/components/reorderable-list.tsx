@@ -4,11 +4,13 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 export function ReorderableList({
+  id,
   items,
   setItems,
   className,
   labels,
 }: {
+  id?: string;
   items: string[];
   setItems: (v: string[]) => void;
   className?: string;
@@ -17,7 +19,7 @@ export function ReorderableList({
   let dragIndex: number | null = null;
 
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
+    <div id={id} className={cn('flex flex-col gap-2', className)}>
       {items.map((item, idx) => (
         <Card
           key={item}

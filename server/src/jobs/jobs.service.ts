@@ -12,7 +12,7 @@ export class JobsService {
   constructor(
     @InjectModel('Job') private jobModel: Model<JobDocument>,
     @InjectModel('User') private userModel: Model<UserDocument>,
-  ) { }
+  ) {}
 
   async create(dto: CreateJobDto, userId: string) {
     const { coordinates, ...restOfDto } = dto;
@@ -79,8 +79,12 @@ export class JobsService {
     };
 
     if (query.category) {
+      const category = Array.isArray(query.category)
+        ? query.category
+        : [query.category];
+
       searchQuery.category = {
-        $in: query.category,
+        $in: category,
       };
     }
 
@@ -170,13 +174,21 @@ export class JobsService {
     if (!user || !user.location) return [];
 
     // 1️⃣ Отримуємо ваги динамічно з preferenceOrder
-    const order = user.preferenceOrder ?? ['distance', 'salary', 'categories', 'reputation'];
+    const order = user.preferenceOrder ?? [
+      'distance',
+      'salary',
+      'categories',
+      'reputation',
+    ];
     const total = order.length;
 
-    const weights = order.reduce((acc, key, i) => {
-      acc[key] = (2 * (total - i)) / (total * (total + 1));
-      return acc;
-    }, {} as Record<string, number>);
+    const weights = order.reduce(
+      (acc, key, i) => {
+        acc[key] = (2 * (total - i)) / (total * (total + 1));
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     const maxSalaryDoc = await this.jobModel
       .findOne({ status: 'active' })
@@ -244,8 +256,8 @@ export class JobsService {
       { $limit: 30 },
       {
         $set: {
-          coordinates: '$location.coordinates'
-        }
+          coordinates: '$location.coordinates',
+        },
       },
       {
         $project: {

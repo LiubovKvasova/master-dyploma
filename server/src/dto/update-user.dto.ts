@@ -23,7 +23,13 @@ export class UpdateUserDto {
   @IsString()
   fullname?: string;
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   preferenceOrder: string[];
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  interestedCategories?: string[];
 }

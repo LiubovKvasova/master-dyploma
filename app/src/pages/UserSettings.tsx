@@ -9,8 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { apiFetch } from '@/lib/api';
 import * as storageHelper from '@/lib/storageHelper';
-import { DEFAULT_PREFERENCE_ORDER, PREFERENCE_LABELS } from '@/lib/constants';
+import { DEFAULT_PREFERENCE_ORDER, JOB_CATEGORIES, PREFERENCE_LABELS } from '@/lib/constants';
 import { ReorderableList } from '@/components/reorderable-list';
+import { MultiSelectDropdown } from '@/components/multiselect-dropdown';
 
 export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<any> }) => {
   const [username, setUsername] = useState(user?.username);
@@ -18,6 +19,7 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
   const [phone, setPhone] = useState(user?.phone);
   const [fullname, setFullname] = useState(user?.fullname);
   const [preferenceOrder, setPreferenceOrder] = useState(user?.preferenceOrder ?? DEFAULT_PREFERENCE_ORDER);
+  const [interestedCategories, setInterestedCategories] = useState<string[]>(user?.interestedCategories ?? []);
 
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -34,7 +36,7 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
 
     const res = await apiFetch('/users/update', {
       method: 'PUT',
-      body: JSON.stringify({ username, email, phone, fullname, preferenceOrder }),
+      body: JSON.stringify({ username, email, phone, fullname, preferenceOrder, interestedCategories }),
     });
 
     if (res.ok) {
@@ -104,10 +106,31 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
               <Label htmlFor="fullname">Повне ім'я</Label>
               <Input id="fullname" type="fullname" value={fullname} onChange={(e) => setFullname(e.target.value)} />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="fullname">Пріоритетність критеріїв</Label>
-              <ReorderableList className="text-sm" items={preferenceOrder} setItems={setPreferenceOrder} labels={PREFERENCE_LABELS} />
-            </div>
+
+            {user?.role === 'worker' &&
+              <>
+                <div className="grid gap-2">
+                  <Label htmlFor="criteria">Пріоритетність критеріїв</Label>
+                  <ReorderableList
+                    id="criteria"
+                    className="text-sm"
+                    items={preferenceOrder}
+                    setItems={setPreferenceOrder}
+                    labels={PREFERENCE_LABELS}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <MultiSelectDropdown
+                    label="Бажані категорії"
+                    className="mb-4"
+                    options={JOB_CATEGORIES}
+                    values={interestedCategories}
+                    setValues={setInterestedCategories}
+                  />
+                </div>
+              </>
+            }
             <CardFooter>
               <Button type="submit">Зберегти</Button>
             </CardFooter>
