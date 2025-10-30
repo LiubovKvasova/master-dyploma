@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { PassportLocalModel } from 'mongoose';
+import { PassportLocalModel, Types } from 'mongoose';
 
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { OnboardingDto } from 'src/dto/onboarding.dto';
@@ -21,7 +21,7 @@ const unwantedKeys = ['_id', '__v', 'hash', 'salt'];
 export class UsersService {
   constructor(
     @InjectModel('User') private userModel: PassportLocalModel<UserDocument>,
-  ) {}
+  ) { }
 
   async register(createUserDto: CreateUserDto) {
     const { email, username, password, phone, fullname, role } = createUserDto;
@@ -97,11 +97,123 @@ export class UsersService {
     return user;
   }
 
-  async showInfo(userId: string) {
-    return this.userModel
-      .findById(userId)
-      .select('username email rating role phone fullname')
-      .exec();
+  async showInfo(viewerId: string, targetUserId: string) {
+    const [userData] = await this.userModel.aggregate([
+      {
+        $match: { _id: new Types.ObjectId(targetUserId) },
+      },
+      {
+        $lookup: {
+          from: 'reviews',
+          localField: '_id',
+          foreignField: 'targetId',
+          as: 'reviews',
+          pipeline: [
+            { $match: { comment: { $exists: true, $ne: '' } } },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'authorId',
+                foreignField: '_id',
+                as: 'author',
+                pipeline: [
+                  { $project: { username: 1, fullname: 1, rating: 1 } },
+                ],
+              },
+            },
+            {
+              $unwind: {
+                path: '$author',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                rating: 1,
+                comment: 1,
+                createdAt: 1,
+                author: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'jobs',
+          let: { userId: '$_id', role: '$role' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$$role', 'employer'] },
+                    { $eq: ['$owner', '$$userId'] },
+                    { $eq: ['$status', 'active'] },
+                  ],
+                },
+              },
+            },
+            {
+              // Пошук заявок, які залишав viewerId (робітник)
+              $lookup: {
+                from: 'applications',
+                let: { jobId: '$_id' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: {
+                        $and: [
+                          { $eq: ['$jobId', '$$jobId'] },
+                          { $eq: ['$workerId', new Types.ObjectId(viewerId)] },
+                          { $eq: ['$employerId', new Types.ObjectId(targetUserId)] },
+                        ],
+                      },
+                    },
+                  },
+                ],
+                as: 'viewerApplications',
+              },
+            },
+            {
+              $addFields: {
+                hasApplied: { $gt: [{ $size: '$viewerApplications' }, 0] },
+              },
+            },
+            {
+              $project: {
+                _id: 1,
+                title: 1,
+                description: 1,
+                category: 1,
+                hourRate: 1,
+                status: 1,
+                address: 1,
+                createdAt: 1,
+                hasApplied: 1,
+              },
+            },
+          ],
+          as: 'activeJobs',
+        },
+      },
+      {
+        $project: {
+          username: 1,
+          email: 1,
+          phone: 1,
+          fullname: 1,
+          role: 1,
+          rating: 1,
+          ratingCount: 1,
+          reviews: 1,
+          activeJobs: 1,
+        },
+      },
+    ]);
+
+    return userData;
   }
 
   async onboardUser(userId: string, dto: OnboardingDto) {

@@ -255,7 +255,29 @@ export class JobsService {
       { $sort: { score: -1 } },
       { $limit: 30 },
       {
+        $lookup: {
+          from: 'applications',
+          let: { jobId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$jobId', '$$jobId'] },
+                    { $eq: ['$workerId', new Types.ObjectId(userId)] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: 'userApplication',
+        },
+      },
+      {
         $set: {
+          hasApplied: {
+            $gt: [{ $size: '$userApplication' }, 0],
+          },
           coordinates: '$location.coordinates',
         },
       },
@@ -277,6 +299,7 @@ export class JobsService {
           distance: 1,
           coordinates: 1,
           owner: { _id: 1, fullname: 1, rating: 1 },
+          hasApplied: 1,
         },
       },
     ]);

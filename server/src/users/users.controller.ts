@@ -62,8 +62,10 @@ export class UsersController {
 
   @UseGuards(AuthenticatedGuard)
   @Get(':userId')
-  async showUserInfo(@Param('userId') userId: string) {
-    const user = await this.usersService.showInfo(userId);
+  async showUserInfo(@Request() req, @Param('userId') userId: string) {
+    const viewerId = req.user._id;
+    const user = await this.usersService.showInfo(viewerId, userId);
+
     if (!user) {
       throw new NotFoundException('User was not found');
     }
