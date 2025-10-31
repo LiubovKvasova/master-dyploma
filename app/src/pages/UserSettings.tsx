@@ -12,6 +12,7 @@ import * as storageHelper from '@/lib/storageHelper';
 import { DEFAULT_PREFERENCE_ORDER, JOB_CATEGORIES, PREFERENCE_LABELS } from '@/lib/constants';
 import { ReorderableList } from '@/components/reorderable-list';
 import { MultiSelectDropdown } from '@/components/multiselect-dropdown';
+import { EditRichText } from '@/components/edit-rich-text';
 
 export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<any> }) => {
   const [username, setUsername] = useState(user?.username);
@@ -20,6 +21,7 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
   const [fullname, setFullname] = useState(user?.fullname);
   const [preferenceOrder, setPreferenceOrder] = useState(user?.preferenceOrder ?? DEFAULT_PREFERENCE_ORDER);
   const [interestedCategories, setInterestedCategories] = useState<string[]>(user?.interestedCategories ?? []);
+  const [aboutMe, setAboutMe] = useState(user?.aboutMe ?? '');
 
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -131,6 +133,26 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
                 </div>
               </>
             }
+            <CardFooter>
+              <Button type="submit">Зберегти</Button>
+            </CardFooter>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Про себе</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handlePasswordUpdate} className="grid gap-4">
+            <div className="grid gap-2">
+              <EditRichText
+                value={aboutMe}
+                onChange={setAboutMe}
+                placeholder="Напишіть про себе та про власний досвід"
+              />
+            </div>
             <CardFooter>
               <Button type="submit">Зберегти</Button>
             </CardFooter>

@@ -119,3 +119,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+.rich-text-component .ql-editor.ql-blank::before {
+  color: var(--muted-foreground);
+}
+
+.rich-text-component.ql-container {
+  font-size: var(--text-base);
+}
+
+@media (width >= 48rem) {
+  .rich-text-component.ql-container {
+    font-size: var(--text-sm);
+  }
+}
