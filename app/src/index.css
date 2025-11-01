@@ -122,6 +122,7 @@
 
 .rich-text-component .ql-editor.ql-blank::before {
   color: var(--muted-foreground);
+  font-style: unset;
 }
 
 .rich-text-component.ql-container {
@@ -132,4 +133,12 @@
   .rich-text-component.ql-container {
     font-size: var(--text-sm);
   }
+}
+
+.rich-text-viewer h1 {
+  font-size: 2em;
+}
+
+.rich-text-viewer h2 {
+  font-size: 1.5em;
 }

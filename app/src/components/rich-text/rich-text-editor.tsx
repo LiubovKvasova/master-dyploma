@@ -1,16 +1,17 @@
 import { useEffect, useRef } from 'react';
 import Quill from 'quill';
-import 'quill/dist/quill.bubble.css';
 import { cn } from '@/lib/utils';
 
-type EditRichTextProps = {
+import 'quill/dist/quill.bubble.css';
+
+type RichTextEditorProps = {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   className?: string;
 };
 
-export function EditRichText({ value, onChange, placeholder, className }: EditRichTextProps) {
+export function RichTextEditor({ value, onChange, placeholder, className }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
 
@@ -30,10 +31,18 @@ export function EditRichText({ value, onChange, placeholder, className }: EditRi
           [{ list: 'ordered' }, { list: 'bullet' }],
           ['clean'],
         ],
+        keyboard: {},
       },
     });
 
-    quill.root.innerHTML = value || '';
+    if (value) {
+      const delta = quill.clipboard.convert(
+        { html: value },
+      );
+
+      quill.setContents(delta, 'silent');
+    }
+
     quill.on('text-change', () => {
       onChange(quill.root.innerHTML);
     });

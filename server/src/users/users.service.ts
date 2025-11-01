@@ -5,9 +5,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PassportLocalModel, Types } from 'mongoose';
+import * as sanitizeHtml from 'sanitize-html';
 
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { OnboardingDto } from 'src/dto/onboarding.dto';
+import { UpdateAboutMeDto } from 'src/dto/update-about-me.dto';
 import { UpdateLocationDto } from 'src/dto/update-location.dto';
 import { UpdatePasswordDto } from 'src/dto/update-password.dto';
 import { UpdateRoleDto } from 'src/dto/update-role.dto';
@@ -39,6 +41,33 @@ export class UsersService {
     const user = await this.userModel.findByIdAndUpdate(userId, dto, {
       new: true,
     });
+
+    if (user) {
+      const object = user.toObject();
+      return filterOutKeys(object, unwantedKeys);
+    }
+
+    return user;
+  }
+
+  async updateAboutMe(userId: string, dto: UpdateAboutMeDto) {
+    const sanitizedInfo = sanitizeHtml(dto.aboutMe, {
+      allowedTags: [
+        'p', 'h1', 'h2', 'ul', 'ol', 'li', 'strong', 'em', 'u', 's',
+        'blockquote', 'code', 'pre', 'br', 'span',
+      ],
+      allowedAttributes: {
+        li: ['class', 'data-list'],
+        span: ['class', 'contenteditable'],
+      },
+      allowedSchemes: ['http', 'https', 'mailto', 'data'],
+    });
+
+    const user = await this.userModel.findByIdAndUpdate(
+      userId,
+      { aboutMe: sanitizedInfo },
+      { new: true },
+    );
 
     if (user) {
       const object = user.toObject();
@@ -209,6 +238,7 @@ export class UsersService {
           ratingCount: 1,
           reviews: 1,
           activeJobs: 1,
+          aboutMe: 1,
         },
       },
     ]);

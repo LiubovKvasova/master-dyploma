@@ -56,6 +56,9 @@ const UserSchema = new Schema({
     enum: ['distance', 'salary', 'categories', 'reputation'],
     default: ['distance', 'salary', 'categories', 'reputation'],
   },
+  aboutMe: {
+    type: String,
+  }
 });
 
 UserSchema.plugin(passportLocalMongoose, {

@@ -19,6 +19,7 @@ import { UpdatePasswordDto } from 'src/dto/update-password.dto';
 import { UpdateRoleDto } from 'src/dto/update-role.dto';
 import { UpdateUserDto } from 'src/dto/update-user.dto';
 import { AuthenticatedGuard } from 'src/auth/auth.guard';
+import { UpdateAboutMeDto } from 'src/dto/update-about-me.dto';
 
 @Controller('users')
 export class UsersController {
@@ -40,6 +41,12 @@ export class UsersController {
   @Put('update')
   updateProfile(@Request() req, @Body() dto: UpdateUserDto) {
     return this.usersService.updateProfile(req.user._id, dto);
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Put('update/about-me')
+  updateAboutMe(@Request() req, @Body() dto: UpdateAboutMeDto) {
+    return this.usersService.updateAboutMe(req.user._id, dto);
   }
 
   @UseGuards(AuthenticatedGuard)

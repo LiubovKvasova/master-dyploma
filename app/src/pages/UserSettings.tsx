@@ -12,7 +12,7 @@ import * as storageHelper from '@/lib/storageHelper';
 import { DEFAULT_PREFERENCE_ORDER, JOB_CATEGORIES, PREFERENCE_LABELS } from '@/lib/constants';
 import { ReorderableList } from '@/components/reorderable-list';
 import { MultiSelectDropdown } from '@/components/multiselect-dropdown';
-import { EditRichText } from '@/components/edit-rich-text';
+import { RichTextEditor } from '@/components/rich-text/rich-text-editor';
 
 export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<any> }) => {
   const [username, setUsername] = useState(user?.username);
@@ -49,6 +49,25 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
       alert('Профіль оновлено!');
     } else {
       alert('Виникла помилка при оновленні профілю');
+    }
+  };
+
+  const handleAboutMeUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const res = await apiFetch('/users/update/about-me', {
+      method: 'PUT',
+      body: JSON.stringify({ aboutMe }),
+    });
+
+    if (res.ok) {
+      const newUser = await res.json();
+      await storageHelper.updateUser(newUser);
+      setUser((oldValue: object) => ({ ...oldValue, ...newUser }));
+
+      alert('Інформацію про себе оновлено!');
+    } else {
+      alert('Виникла помилка при оновленні інформації про себе');
     }
   };
 
@@ -145,9 +164,9 @@ export const UserSettings = ({ user, setUser }: { user: any, setUser: Dispatch<a
           <CardTitle>Про себе</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handlePasswordUpdate} className="grid gap-4">
+          <form onSubmit={handleAboutMeUpdate} className="grid gap-4">
             <div className="grid gap-2">
-              <EditRichText
+              <RichTextEditor
                 value={aboutMe}
                 onChange={setAboutMe}
                 placeholder="Напишіть про себе та про власний досвід"

@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import {
   Loader2,
   User,
@@ -12,10 +10,15 @@ import {
   Briefcase,
   MessageSquare,
   MapPin,
+  PenLine,
 } from 'lucide-react';
-import { apiFetch } from '@/lib/api';
 import { format } from 'date-fns';
 import { uk } from 'date-fns/locale';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { RichTextViewer } from '@/components/rich-text/rich-text-viewer';
+import { apiFetch } from '@/lib/api';
 import { formatDuration } from '@/lib/language';
 import { getCategoryName, stringifyAddress } from '@/lib/utils';
 
@@ -42,6 +45,7 @@ type UserInfoType = {
   rating?: number;
   reviews?: ReviewType[];
   activeJobs?: Job[];
+  aboutMe?: string;
 };
 
 export function UserInfo() {
@@ -137,8 +141,8 @@ export function UserInfo() {
               {user.role === 'worker'
                 ? 'Працівник'
                 : user.role === 'employer'
-                ? 'Роботодавець'
-                : user.role}
+                  ? 'Роботодавець'
+                  : user.role}
             </span>
           </div>
 
@@ -150,6 +154,19 @@ export function UserInfo() {
           )}
         </CardContent>
       </Card>
+
+      {/* Про себе */}
+      {user.aboutMe && (
+        <Card className="w-full max-w-2xl shadow-sm border">
+          <CardHeader className="flex items-center gap-2">
+            <PenLine className="w-5 h-5 text-primary" />
+            <CardTitle>Про себе</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RichTextViewer value={user.aboutMe} />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Відгуки */}
       {user.reviews && user.reviews.length > 0 && (
