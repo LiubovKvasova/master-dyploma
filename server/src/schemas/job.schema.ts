@@ -65,6 +65,9 @@ export const JobSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+    images: {
+      type: [String]
+    },
   },
   {
     timestamps: true,

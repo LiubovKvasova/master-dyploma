@@ -1,13 +1,21 @@
 export const API_BASE = "http://localhost:3000";
 
-export const apiFetch = async (path: string, options: RequestInit = {}): Promise<Response> => {
+type ExtraOptions = {
+  multipart: boolean;
+}
+
+export const apiFetch = async (
+  path: string,
+  options: RequestInit = {},
+  extraOptions?: ExtraOptions,
+): Promise<Response> => {
   const fullUrl = new URL(path, API_BASE);
   const { headers, ...otherOptions } = options;
 
   return fetch(fullUrl, {
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
+      ...(extraOptions?.multipart ? {} : {"Content-Type": "application/json"}),
       ...(headers || {}),
     },
     ...otherOptions,

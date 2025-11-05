@@ -65,18 +65,25 @@ export function CreateJob({ user }: CreateJobProps) {
       return;
     }
 
+    const data = JSON.stringify({
+      title,
+      description,
+      category,
+      hourRate,
+      address,
+      duration,
+      coordinates: coords,
+    });
+
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    formData.append('data', data);
+
     try {
       const res = await apiFetch(`/jobs/create`, {
         method: 'POST',
-        body: JSON.stringify({
-          title,
-          description,
-          category,
-          hourRate,
-          address,
-          duration,
-          coordinates: coords,
-        }),
+        body: formData,
+      }, {
+        multipart: true
       });
 
       if (!res.ok) {
@@ -251,6 +258,17 @@ export function CreateJob({ user }: CreateJobProps) {
             <TriangleAlert className="mr-2 h-4 w-4 flex-shrink-0" />
             <span>Обрано понаднормову кількість годин</span>
           </SlideFade>
+        </div>
+
+        <div>
+          <Label htmlFor="images">Зображення для опису роботи</Label>
+          <Input
+            id="images"
+            name="images"
+            type="file"
+            multiple
+            accept="image/*"
+          />
         </div>
 
         <Button type="submit" className="mt-2">

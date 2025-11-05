@@ -41,4 +41,7 @@ export class CreateJobDto {
 
   @IsNumber()
   hourRate: number;
+
+  @IsOptional()
+  images?: string[];
 }
