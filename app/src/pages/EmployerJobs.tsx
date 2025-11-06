@@ -5,7 +5,8 @@ import { MapPin } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { apiFetch } from '@/lib/api';
+import { ImageCarousel } from '@/components/image-carousel';
+import { apiFetch, imageUrl } from '@/lib/api';
 import { CENTER_OF_UKRAINE, SCALE } from '@/lib/constants';
 import { getCategoryName, stringifyAddress } from '@/lib/utils';
 import { formatDuration } from '@/lib/language';
@@ -58,7 +59,7 @@ export function EmployerJobs({ user }: EmployerJobsProps) {
     <div className="flex gap-6 p-6">
       <div className="w-1/2 overflow-y-auto max-h-[90vh] flex flex-col gap-4">
         {jobs.map((job) => (
-          <div key={job._id} ref={(el) => {listRefs.current[job._id] = el}}>
+          <div key={job._id} ref={(el) => { listRefs.current[job._id] = el }}>
             <Card
               className={`cursor-pointer ${selectedJobId === job._id ? 'border-primary' : ''}`}
               onClick={() => setSelectedJobId(job._id)}
@@ -83,6 +84,13 @@ export function EmployerJobs({ user }: EmployerJobsProps) {
                   <strong>Тривалість:</strong>
                   <span className="ml-1">{formatDuration(job.duration)}</span>
                 </p>
+
+                {job.images && (
+                  <ImageCarousel
+                    images={job.images.map((url) => imageUrl(url))}
+                    className="my-4"
+                  />
+                )}
 
                 <div className="flex items-center gap-2 mt-3 text-sm">
                   <MapPin className="h-4 w-4" />

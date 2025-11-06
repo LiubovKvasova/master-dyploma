@@ -66,7 +66,7 @@ export const JobSchema = new Schema(
       ref: 'User',
     },
     images: {
-      type: [String]
+      type: [String],
     },
   },
   {

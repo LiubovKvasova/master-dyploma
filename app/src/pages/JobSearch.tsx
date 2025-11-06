@@ -11,10 +11,11 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { MultiSelectDropdown } from '@/components/multiselect-dropdown';
 import { JOB_CATEGORIES } from '@/lib/constants';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, imageUrl } from '@/lib/api';
 import { SCALE } from '@/lib/constants';
 import { getCategoryName, stringifyAddress } from '@/lib/utils';
 import { formatDuration } from '@/lib/language';
+import { ImageCarousel } from '@/components/image-carousel';
 
 type JobSearchProps = {
   user: {
@@ -202,6 +203,13 @@ export function JobSearch({ user }: JobSearchProps) {
                     <strong>Відстань:</strong>
                     <span className="ml-1">{Math.round(job.distance)} м</span>
                   </p>
+                )}
+
+                {job.images && (
+                  <ImageCarousel
+                    images={job.images.map((url) => imageUrl(url))}
+                    className="my-4"
+                  />
                 )}
 
                 <div className="flex items-center gap-2 mt-3 text-sm">

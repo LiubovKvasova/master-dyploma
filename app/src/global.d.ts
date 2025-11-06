@@ -64,6 +64,7 @@ type Job = {
   address: JobAddress;
   fullAddress: string;
   hasApplied?: boolean;
+  images?: string[];
 
   score?: number;
   salaryScore?: number;

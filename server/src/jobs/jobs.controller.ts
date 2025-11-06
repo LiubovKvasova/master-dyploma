@@ -45,13 +45,15 @@ export class JobsController {
       }),
       fileFilter: (req, file, callback) => {
         if (!file.mimetype.match(/\/(jpg|jpeg|png|webp)$/)) {
-          const error = new BadRequestException('These extensions are allowed: jpg, jpeg, png, webp');
+          const error = new BadRequestException(
+            'These extensions are allowed: jpg, jpeg, png, webp',
+          );
           return callback(error, false);
         }
 
         callback(null, true);
-      }
-    })
+      },
+    }),
   )
   async create(
     @UploadedFiles() images: Express.Multer.File[],

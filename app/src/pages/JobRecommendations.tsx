@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Tooltip, useMap } from 'react-leaflet';
-import { User, MapPin, ChevronDown } from 'lucide-react';
+import { User, MapPin } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { apiFetch } from '@/lib/api';
+import { ImageCarousel } from '@/components/image-carousel';
+import { apiFetch, imageUrl } from '@/lib/api';
 import { SCALE } from '@/lib/constants';
 import { getCategoryName, stringifyAddress } from '@/lib/utils';
 import { formatDuration } from '@/lib/language';
@@ -101,6 +102,13 @@ export function JobRecommendations({ user }: JobRecommendationsProps) {
 
                 {typeof job.distance === 'number' && (
                   <p><strong>Відстань:</strong> {Math.round(job.distance)} м</p>
+                )}
+
+                {job.images && (
+                  <ImageCarousel
+                    images={job.images.map((url) => imageUrl(url))}
+                    className="my-4"
+                  />
                 )}
 
                 <div className="flex items-center gap-2 mt-3 text-sm">

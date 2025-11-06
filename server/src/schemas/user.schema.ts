@@ -58,7 +58,7 @@ const UserSchema = new Schema({
   },
   aboutMe: {
     type: String,
-  }
+  },
 });
 
 UserSchema.plugin(passportLocalMongoose, {

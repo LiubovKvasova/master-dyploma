@@ -300,6 +300,7 @@ export class JobsService {
           coordinates: 1,
           owner: { _id: 1, fullname: 1, rating: 1 },
           hasApplied: 1,
+          images: 1,
         },
       },
     ]);

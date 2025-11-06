@@ -22,6 +22,10 @@ export const apiFetch = async (
   });
 };
 
+// Straightforward function to construct image URL
+export const imageUrl = (imagePath: string): string =>
+  (new URL(imagePath, API_BASE)).toString();
+
 export const geoFetch = async (lat: number, lon: number): Promise<object | null> => {
   const geoResearchUrl = new URL('https://nominatim.openstreetmap.org/reverse');
 

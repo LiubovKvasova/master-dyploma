@@ -17,8 +17,9 @@ import { uk } from 'date-fns/locale';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ImageCarousel } from '@/components/image-carousel';
 import { RichTextViewer } from '@/components/rich-text/rich-text-viewer';
-import { apiFetch } from '@/lib/api';
+import { apiFetch, imageUrl } from '@/lib/api';
 import { formatDuration } from '@/lib/language';
 import { getCategoryName, stringifyAddress } from '@/lib/utils';
 
@@ -239,6 +240,13 @@ export function UserInfo() {
                       <strong>Тривалість:</strong>
                       <span className="ml-1">{formatDuration(job.duration)}</span>
                     </p>
+                  )}
+
+                  {job.images && (
+                    <ImageCarousel
+                      images={job.images.map((url) => imageUrl(url))}
+                      className="my-4"
+                    />
                   )}
 
                   {job.address && (

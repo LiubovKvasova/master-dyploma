@@ -23,7 +23,7 @@ const unwantedKeys = ['_id', '__v', 'hash', 'salt'];
 export class UsersService {
   constructor(
     @InjectModel('User') private userModel: PassportLocalModel<UserDocument>,
-  ) { }
+  ) {}
 
   async register(createUserDto: CreateUserDto) {
     const { email, username, password, phone, fullname, role } = createUserDto;
@@ -53,8 +53,21 @@ export class UsersService {
   async updateAboutMe(userId: string, dto: UpdateAboutMeDto) {
     const sanitizedInfo = sanitizeHtml(dto.aboutMe, {
       allowedTags: [
-        'p', 'h1', 'h2', 'ul', 'ol', 'li', 'strong', 'em', 'u', 's',
-        'blockquote', 'code', 'pre', 'br', 'span',
+        'p',
+        'h1',
+        'h2',
+        'ul',
+        'ol',
+        'li',
+        'strong',
+        'em',
+        'u',
+        's',
+        'blockquote',
+        'code',
+        'pre',
+        'br',
+        'span',
       ],
       allowedAttributes: {
         li: ['class', 'data-list'],
@@ -196,7 +209,12 @@ export class UsersService {
                         $and: [
                           { $eq: ['$jobId', '$$jobId'] },
                           { $eq: ['$workerId', new Types.ObjectId(viewerId)] },
-                          { $eq: ['$employerId', new Types.ObjectId(targetUserId)] },
+                          {
+                            $eq: [
+                              '$employerId',
+                              new Types.ObjectId(targetUserId),
+                            ],
+                          },
                         ],
                       },
                     },
@@ -221,6 +239,7 @@ export class UsersService {
                 address: 1,
                 createdAt: 1,
                 hasApplied: 1,
+                images: 1,
               },
             },
           ],
