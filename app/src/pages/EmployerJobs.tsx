@@ -85,6 +85,13 @@ export function EmployerJobs({ user }: EmployerJobsProps) {
                   <span className="ml-1">{formatDuration(job.duration)}</span>
                 </p>
 
+                {(job.maxWorkers as number) > 1 && (
+                  <p className="mb-1">
+                    <strong>Кількість працівників:</strong>
+                    <span className="ml-1">{job.maxWorkers}</span>
+                  </p>
+                )}
+
                 {job.images && (
                   <ImageCarousel
                     images={job.images.map((url) => imageUrl(url))}

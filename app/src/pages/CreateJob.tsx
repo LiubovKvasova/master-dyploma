@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { apiFetch, geoFetch } from '@/lib/api';
 import { JOB_CATEGORIES } from '@/lib/constants';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type CreateJobProps = {
   user: {
@@ -37,6 +38,8 @@ export function CreateJob({ user }: CreateJobProps) {
     user?.coordinates
   );
   const [address, setAddress] = useState<any>(user?.address);
+  const [groupWork, setGroupWork] = useState(false);
+  const [maxWorkers, setMaxWorkers] = useState<number | null>(null);
 
   if (user?.role !== 'employer') {
     return <Navigate to="/" replace />;
@@ -65,7 +68,7 @@ export function CreateJob({ user }: CreateJobProps) {
       return;
     }
 
-    const data = JSON.stringify({
+    const data = {
       title,
       description,
       category,
@@ -73,10 +76,15 @@ export function CreateJob({ user }: CreateJobProps) {
       address,
       duration,
       coordinates: coords,
-    });
+      maxWorkers: 1,
+    };
+
+    if (groupWork && maxWorkers) {
+      data.maxWorkers = maxWorkers;
+    }
 
     const formData = new FormData(e.currentTarget as HTMLFormElement);
-    formData.append('data', data);
+    formData.append('data', JSON.stringify(data));
 
     try {
       const res = await apiFetch(`/jobs/create`, {
@@ -106,8 +114,8 @@ export function CreateJob({ user }: CreateJobProps) {
   };
 
   // Dropdown items generator
-  const rangeItems = (max: number) =>
-    Array.from({ length: max }, (_, i) => i + 1).map((n) => (
+  const rangeItems = (max: number, start = 1) =>
+    Array.from({ length: (max - start + 1) }, (_, i) => i + start).map((n) => (
       <SelectItem key={n} value={n.toString()}>
         {n}
       </SelectItem>
@@ -160,6 +168,31 @@ export function CreateJob({ user }: CreateJobProps) {
             onChange={(e) => setHourRate(Number(e.target.value))}
             required
           />
+        </div>
+
+        <div className="flex">
+          <div className="flex-1 flex items-center space-x-2 my-2">
+            <Checkbox
+              id="groupWork"
+              checked={groupWork}
+              onCheckedChange={() => { setGroupWork((value) => !value) }}
+              required
+            />
+            <Label htmlFor="groupWork">Декілька робітників</Label>
+          </div>
+
+          <SlideFade className="flex-1" show={groupWork}>
+            <Label>Кількість працівників</Label>
+            <Select
+              value={String(maxWorkers)}
+              onValueChange={(value) => { setMaxWorkers(Number(value)); }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>{rangeItems(20, 2)}</SelectContent>
+            </Select>
+          </SlideFade>
         </div>
 
         <div>

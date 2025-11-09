@@ -25,7 +25,7 @@ type EmployerApplicationsProps = {
 export function EmployerApplications({ user }: EmployerApplicationsProps) {
   const [jobs, setJobs] = useState<any[]>([]);
   const [expandedJobs, setExpandedJobs] = useState<Record<string, boolean>>({});
-  const [selectedApplication, setSelectedApplication] = useState<any | null>(null);
+  const [selectedJob, setSelectedJob] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -67,15 +67,13 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
     return messages[messages.length - 1];
   };
 
-  const handleCloseJob = async (applicationId: string, reopen = false) => {
-    const route = reopen
-      ? `/applications/fail/${applicationId}`
-      : `/applications/close/${applicationId}`;
+  const handleCloseJob = async (jobId: string, reopen = false) => {
+    const route = (reopen) ? `/jobs/fail/${jobId}` : `/jobs/close/${jobId}`;
     const res = await apiFetch(route, { method: 'PATCH' });
 
     if (res.ok) {
       setDialogOpen(false);
-      setSelectedApplication(null);
+      setSelectedJob(null);
       await fetchApplications();
     } else {
       alert('Не вдалося оновити статус діяльності');
@@ -107,13 +105,8 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
                   variant="outline"
                   className="text-red-600 border-red-600 hover:bg-red-100"
                   onClick={() => {
-                    const appInProgress = job.applications.find(
-                      (a: any) => a.status === 'in_progress'
-                    );
-                    if (appInProgress) {
-                      setSelectedApplication(appInProgress);
-                      setDialogOpen(true);
-                    }
+                    setSelectedJob(job._id);
+                    setDialogOpen(true);
                   }}
                 >
                   Завершити діяльність
@@ -234,14 +227,14 @@ export function EmployerApplications({ user }: EmployerApplicationsProps) {
           <DialogFooter className="flex justify-between">
             <Button
               variant="default"
-              onClick={() => handleCloseJob(selectedApplication._id, false)}
+              onClick={() => handleCloseJob(selectedJob!, false)}
             >
               Так, закрити оголошення
             </Button>
 
             <Button
               variant="destructive"
-              onClick={() => handleCloseJob(selectedApplication._id, true)}
+              onClick={() => handleCloseJob(selectedJob!, true)}
             >
               Ні, перевідкрити оголошення
             </Button>

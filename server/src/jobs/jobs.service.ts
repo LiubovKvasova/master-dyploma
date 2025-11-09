@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Types, type Model } from 'mongoose';
 
@@ -6,12 +10,15 @@ import { JobDocument } from 'src/schemas/job.schema';
 import { CreateJobDto } from 'src/dto/create-job.dto';
 import { NearbyJobsDto } from 'src/dto/nearby-jobs.dto';
 import { UserDocument } from 'src/schemas/user.schema';
+import { ApplicationDocument } from 'src/schemas/application.schema';
 
 @Injectable()
 export class JobsService {
   constructor(
     @InjectModel('Job') private jobModel: Model<JobDocument>,
     @InjectModel('User') private userModel: Model<UserDocument>,
+    @InjectModel('Application')
+    private applicationModel: Model<ApplicationDocument>,
   ) {}
 
   async create(dto: CreateJobDto, userId: string) {
@@ -301,10 +308,53 @@ export class JobsService {
           owner: { _id: 1, fullname: 1, rating: 1 },
           hasApplied: 1,
           images: 1,
+          maxWorkers: 1,
         },
       },
     ]);
 
     return jobs;
+  }
+
+  async close(jobId: string, owner: string) {
+    const job = await this.jobModel.findById(jobId);
+    if (!job) {
+      throw new NotFoundException('The job was not found');
+    }
+
+    if (String(job.owner) !== owner) {
+      throw new ForbiddenException('You cannot close this job');
+    }
+
+    job.status = 'closed';
+    await job.save();
+
+    await this.applicationModel.updateMany(
+      { jobId: job._id, status: 'in_progress' },
+      { status: 'closed' },
+    );
+
+    return job;
+  }
+
+  async fail(jobId: string, owner: string) {
+    const job = await this.jobModel.findById(jobId);
+    if (!job) {
+      throw new NotFoundException('The job was not found');
+    }
+
+    if (String(job.owner) !== owner) {
+      throw new ForbiddenException('You cannot fail this job');
+    }
+
+    job.status = 'active';
+    await job.save();
+
+    await this.applicationModel.updateMany(
+      { jobId: job._id, status: 'in_progress' },
+      { status: 'failed' },
+    );
+
+    return job;
   }
 }

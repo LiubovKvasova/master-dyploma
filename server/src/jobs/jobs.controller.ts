@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   BadRequestException,
   UploadedFiles,
+  Patch,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -99,5 +100,15 @@ export class JobsController {
   async getRecommendedJobs(@Request() req) {
     const userId = req.user._id;
     return this.jobsService.getRecommendedJobsForUser(userId);
+  }
+
+  @Patch('close/:jobId')
+  close(@Param('jobId') id: string, @Request() req) {
+    return this.jobsService.close(id, req.user.id);
+  }
+
+  @Patch('fail/:jobId')
+  fail(@Param('jobId') id: string, @Request() req) {
+    return this.jobsService.fail(id, req.user.id);
   }
 }

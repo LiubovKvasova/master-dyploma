@@ -44,4 +44,8 @@ export class CreateJobDto {
 
   @IsOptional()
   images?: string[];
+
+  @IsOptional()
+  @IsNumber()
+  maxWorkers?: number;
 }

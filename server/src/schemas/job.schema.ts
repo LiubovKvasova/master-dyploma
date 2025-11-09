@@ -68,6 +68,11 @@ export const JobSchema = new Schema(
     images: {
       type: [String],
     },
+    maxWorkers: {
+      type: Number,
+      default: 1,
+      required: true,
+    },
   },
   {
     timestamps: true,

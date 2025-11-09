@@ -164,8 +164,14 @@ export class ApplicationsService {
 
   async agree(applicationId: string, userId: string) {
     const application = await this.applicationModel.findById(applicationId);
-    if (!application)
+    if (!application) {
       throw new NotFoundException('The application was not found');
+    }
+
+    const job = await this.jobModel.findById(application.jobId);
+    if (job?.status !== 'active') {
+      throw new ForbiddenException('You cannot apply for this job anymore');
+    }
 
     let changed = false;
 
@@ -179,59 +185,28 @@ export class ApplicationsService {
       changed = true;
     }
 
-    if (!changed)
+    if (!changed) {
       throw new ForbiddenException('You have no rights to agree for this job');
+    }
 
     if (application.workerAgreed && application.employerAgreed) {
       application.status = 'in_progress';
-      await this.jobModel.findByIdAndUpdate(application.jobId, {
+
+      const count = await this.applicationModel.countDocuments({
+        jobId: job._id,
         status: 'in_progress',
-        selectedWorker: application.workerId,
       });
+      const maxWorkers = job?.maxWorkers ?? 1;
+
+      // "count + 1" because we need to take current application into account
+      if (count + 1 >= maxWorkers) {
+        await this.jobModel.findByIdAndUpdate(application.jobId, {
+          status: 'in_progress',
+        });
+      }
     }
 
     await application.save();
-    return application;
-  }
-
-  async closeApplication(applicationId: string, employerId: string) {
-    const application = await this.applicationModel.findById(applicationId);
-    if (!application) {
-      throw new NotFoundException('The application was not found');
-    }
-
-    if (String(application.employerId) !== employerId) {
-      throw new ForbiddenException('You cannot close this application');
-    }
-
-    application.status = 'closed';
-    await application.save();
-
-    await this.jobModel.findByIdAndUpdate(application.jobId, {
-      status: 'closed',
-    });
-
-    return application;
-  }
-
-  async failApplication(applicationId: string, employerId: string) {
-    const application = await this.applicationModel.findById(applicationId);
-    if (!application) {
-      throw new NotFoundException('The application was not found');
-    }
-
-    if (String(application.employerId) !== employerId) {
-      throw new ForbiddenException('You cannot fail this application');
-    }
-
-    application.status = 'failed';
-    await application.save();
-
-    await this.jobModel.findByIdAndUpdate(application.jobId, {
-      status: 'active',
-      selectedWorker: null,
-    });
-
     return application;
   }
 }

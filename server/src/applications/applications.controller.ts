@@ -52,14 +52,4 @@ export class ApplicationsController {
   agree(@Param('applicationId') id: string, @Req() req) {
     return this.service.agree(id, req.user.id);
   }
-
-  @Patch('close/:applicationId')
-  close(@Param('applicationId') id: string, @Req() req) {
-    return this.service.closeApplication(id, req.user.id);
-  }
-
-  @Patch('fail/:applicationId')
-  fail(@Param('applicationId') id: string, @Req() req) {
-    return this.service.failApplication(id, req.user.id);
-  }
 }

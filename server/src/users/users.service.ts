@@ -240,6 +240,7 @@ export class UsersService {
                 createdAt: 1,
                 hasApplied: 1,
                 images: 1,
+                maxWorkers: 1,
               },
             },
           ],
