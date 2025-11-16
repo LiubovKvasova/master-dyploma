@@ -11,6 +11,11 @@ import { CreateJobDto } from 'src/dto/create-job.dto';
 import { NearbyJobsDto } from 'src/dto/nearby-jobs.dto';
 import { UserDocument } from 'src/schemas/user.schema';
 import { ApplicationDocument } from 'src/schemas/application.schema';
+import {
+  generateScoreCalculation,
+  generateWeightConvolution,
+  generateWeights,
+} from 'src/lib/convolution';
 
 @Injectable()
 export class JobsService {
@@ -187,15 +192,7 @@ export class JobsService {
       'categories',
       'reputation',
     ];
-    const total = order.length;
-
-    const weights = order.reduce(
-      (acc, key, i) => {
-        acc[key] = (2 * (total - i)) / (total * (total + 1));
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
+    const weights = generateWeights(order);
 
     const maxSalaryDoc = await this.jobModel
       .findOne({ status: 'active' })
@@ -227,38 +224,9 @@ export class JobsService {
       },
       { $unwind: '$owner' },
 
-      {
-        $set: {
-          salaryScore: {
-            $divide: ['$hourRate', maxSalary],
-          },
-          distanceScore: {
-            $max: [{ $subtract: [1, '$distance'] }, 0],
-          },
-          categoryScore: {
-            $cond: [
-              { $in: ['$category', user.interestedCategories ?? []] },
-              1,
-              0,
-            ],
-          },
-          reputationScore: {
-            $divide: [{ $ifNull: ['$owner.rating', 0] }, 5],
-          },
-        },
-      },
-      {
-        $set: {
-          score: {
-            $add: [
-              { $multiply: ['$distanceScore', weights.distance ?? 0] },
-              { $multiply: ['$salaryScore', weights.salary ?? 0] },
-              { $multiply: ['$categoryScore', weights.categories ?? 0] },
-              { $multiply: ['$reputationScore', weights.reputation ?? 0] },
-            ],
-          },
-        },
-      },
+      generateScoreCalculation(maxSalary, user.interestedCategories),
+      generateWeightConvolution(weights),
+
       { $sort: { score: -1 } },
       { $limit: 30 },
       {
