@@ -61,6 +61,19 @@ export class JobsService {
   }
 
   async findNearby(query: NearbyJobsDto, userId: string) {
+    const user = await this.userModel.findById(userId).lean();
+    if (!user) {
+      return [];
+    }
+
+    const order = user.preferenceOrder ?? [
+      'distance',
+      'salary',
+      'categories',
+      'reputation',
+    ];
+    const weights = generateWeights(order);
+
     const { lng, lat, maxDistance } = query;
     const EARTH_RADIUS = 63781.37;
 
@@ -142,6 +155,20 @@ export class JobsService {
         },
       },
       { $unwind: '$owner' },
+
+      {
+        $setWindowFields: {
+          output: {
+            maxHourRate: { $max: '$hourRate' },
+          },
+        },
+      },
+
+      generateScoreCalculation('$maxHourRate', user.interestedCategories),
+      generateWeightConvolution(weights),
+
+      { $sort: { score: -1 } },
+
       {
         $lookup: {
           from: 'applications',
@@ -210,7 +237,12 @@ export class JobsService {
           distanceField: 'distance',
           distanceMultiplier: 200,
           spherical: true,
-          query: { status: 'active' },
+          query: {
+            status: 'active',
+            owner: {
+              $ne: new Types.ObjectId(userId),
+            },
+          },
         },
       },
 

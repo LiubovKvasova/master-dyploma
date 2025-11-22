@@ -18,10 +18,4 @@ export class AuthController {
   async logout(@Request() req) {
     return this.authService.logout(req);
   }
-
-  @UseGuards(AuthenticatedGuard)
-  @Get('user/info')
-  getUserInfo(@Request() req) {
-    return { user: req?.user };
-  }
 }

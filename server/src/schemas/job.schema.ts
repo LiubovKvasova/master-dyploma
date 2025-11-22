@@ -61,10 +61,6 @@ export const JobSchema = new Schema(
       required: true,
       index: true,
     },
-    selectedWorker: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
     images: {
       type: [String],
     },

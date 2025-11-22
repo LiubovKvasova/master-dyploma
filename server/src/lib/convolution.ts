@@ -23,12 +23,13 @@ export const generateWeights = (array: string[]) =>
 /**
  * This function generates algorithms for MongoDB to calculate weights for
  * recommendation criteria.
- * @param maxSalary Maximal salary across searched jobs
+ * @param maxSalary Maximal salary across searched jobs. May be described either
+ * as a number or MongoDB field expression
  * @param interestedCategories Array of categories in which user is interested
  * @returns Aggregation object for MongoDB
  */
 export const generateScoreCalculation = (
-  maxSalary: number,
+  maxSalary: number | string,
   interestedCategories: string[],
 ) => ({
   $set: {
