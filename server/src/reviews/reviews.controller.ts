@@ -6,11 +6,13 @@ import {
   Param,
   Req,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 
 import { ReviewsService } from './reviews.service';
 import { AuthenticatedGuard } from 'src/auth/auth.guard';
 import { CreateReviewDto } from 'src/dto/create-review.dto';
+import { UpdateReviewDto } from 'src/dto/update-review.dto';
 
 @Controller('reviews')
 @UseGuards(AuthenticatedGuard)
@@ -27,13 +29,12 @@ export class ReviewsController {
     return this.reviewsService.getPeopleToReview(req.user.id);
   }
 
-  @Get('received')
-  async getReceived(@Req() req: any) {
-    return this.reviewsService.getReceivedReviews(req.user.id);
-  }
-
-  @Get('given')
-  async getGiven(@Req() req: any) {
-    return this.reviewsService.getGivenReviews(req.user.id);
+  @Patch('/:reviewId')
+  async updateReview(
+    @Param('reviewId') reviewId: string,
+    @Body() dto: UpdateReviewDto,
+    @Req() req: any,
+  ) {
+    return this.reviewsService.updateReview(req.user.id, reviewId, dto);
   }
 }

@@ -10,6 +10,7 @@ import { ReviewDocument } from 'src/schemas/review.schema';
 import { ApplicationDocument } from 'src/schemas/application.schema';
 import { UserDocument } from 'src/schemas/user.schema';
 import { CreateReviewDto } from 'src/dto/create-review.dto';
+import { UpdateReviewDto } from 'src/dto/update-review.dto';
 
 @Injectable()
 export class ReviewsService {
@@ -144,20 +145,18 @@ export class ReviewsService {
     return users;
   }
 
-  async getReceivedReviews(userId: string) {
-    return this.reviewModel
-      .find({ targetId: userId })
-      .populate('authorId', 'username email rating')
-      .sort({ createdAt: -1 })
-      .exec();
-  }
+  async updateReview(userId: string, reviewId: string, dto: UpdateReviewDto) {
+    const updatedReview = await this.reviewModel.findOneAndUpdate(
+      { _id: reviewId, authorId: userId },
+      dto,
+      { new: true },
+    );
 
-  async getGivenReviews(userId: string) {
-    return this.reviewModel
-      .find({ authorId: userId })
-      .populate('targetId', 'username email rating')
-      .sort({ createdAt: -1 })
-      .exec();
+    if (!updatedReview) {
+      throw new NotFoundException('The review was not found');
+    }
+
+    return updatedReview;
   }
 
   private async recalculateUserRating(userId: string) {

@@ -8,16 +8,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { apiFetch } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
+type Review = {
+  _id: string;
+  rating: number;
+  comment?: string;
+}
+
 type Person = {
   _id: string;
   fullname: string;
   username: string;
   email: string;
 
-  review: {
-    rating: number;
-    comment?: string;
-  }
+  review?: Review;
 };
 
 type LeaveReviewProps = {
@@ -34,6 +37,7 @@ export function LeaveReview({ user }: LeaveReviewProps) {
   const [rating, setRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [comment, setComment] = useState<string>('');
+  const [reviewId, setReviewId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const fetchPeople = async () => {
@@ -69,14 +73,23 @@ export function LeaveReview({ user }: LeaveReviewProps) {
     }
 
     setSubmitting(true);
-    const res = await apiFetch('/reviews', {
-      method: 'POST',
-      body: JSON.stringify({
-        targetId: personId,
-        rating,
-        comment: comment.trim() || undefined,
-      }),
-    });
+    let res: Response;
+
+    if (reviewId) {
+      res = await apiFetch(`/reviews/${reviewId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ rating, comment }),
+      });
+    } else {
+      res = await apiFetch('/reviews', {
+        method: 'POST',
+        body: JSON.stringify({
+          targetId: personId,
+          rating,
+          comment: comment.trim() || undefined,
+        }),
+      });
+    }
 
     if (res.ok) {
       alert('Відгук успішно надіслано!');
@@ -84,12 +97,26 @@ export function LeaveReview({ user }: LeaveReviewProps) {
       setOpenReview(null);
       setRating(0);
       setComment('');
+      setReviewId(null);
     } else {
       alert('Не вдалося надіслати відгук');
     }
 
     setSubmitting(false);
   };
+
+  const editButtonHandler = (personId: string, review?: Review) => {
+    setOpenReview((prev) => {
+      const isDialogOpen = prev === personId;
+      const clearExistingReview = (isDialogOpen || !review);
+
+      setRating((clearExistingReview) ? 0 : review.rating);
+      setComment((clearExistingReview) ? '' : review.comment ?? '');
+      setReviewId((clearExistingReview) ? null : review._id);
+
+      return isDialogOpen ? null : personId;
+    });
+  }
 
   if (loading) {
     return <p className="text-center mt-6">Завантаження...</p>;
@@ -112,31 +139,31 @@ export function LeaveReview({ user }: LeaveReviewProps) {
                 <p className="text-sm text-muted-foreground">@{person.username}</p>
               </div>
 
-              {person.review ? (
-                <div className="text-sm text-green-600 font-medium">
-                  ✅ Ви вже залишили відгук
-                </div>
-              ) : (
-                <Button
-                  variant="secondary"
-                  onClick={() =>
-                    setOpenReview((prev) => (prev === person._id ? null : person._id))
-                  }
-                >
-                  {openReview === person._id ? 'Скасувати' : 'Лишити коментар'}
-                </Button>
-              )}
+              <Button
+                variant="secondary"
+                onClick={() => editButtonHandler(person._id, person.review)}
+              >
+                {openReview === person._id ?
+                  'Скасувати' :
+                  person.review ?
+                    'Редагувати' :
+                    'Лишити коментар'}
+              </Button>
             </div>
 
             {person.review && (
-              <div className="mt-3 p-3 bg-muted rounded-xl text-sm">
+              <div className={cn(
+                'mt-3 p-3 bg-muted rounded-xl text-sm',
+                'transition-all ease-in-out duration-500 overflow-hidden',
+                openReview === person._id ? 'max-h-0 opacity-0 p-0 m-0' : 'max-h-[500px] opacity-100 mt-3'
+              )}>
                 <div className="flex items-center gap-1 mb-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Star
                       key={i}
                       size={18}
                       className={
-                        i <= (person.review.rating || 0)
+                        i <= (person.review?.rating || 0)
                           ? 'text-yellow-400 fill-yellow-400'
                           : 'text-gray-400'
                       }
