@@ -1,5 +1,6 @@
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import { useState, type CSSProperties } from 'react';
+import type { LeafletMouseEvent } from 'leaflet';
 
 import { CENTER_OF_UKRAINE, SCALE } from '@/lib/constants';
 
@@ -16,7 +17,7 @@ function LocationMarker({ onSelect, coords }: MapProps) {
   const [position, setPosition] = useState<[number, number] | undefined>(coords);
 
   useMapEvents({
-    click(e: any) {
+    click(e: LeafletMouseEvent) {
       const coords: [number, number] = [e.latlng.lat, e.latlng.lng];
       setPosition(coords);
       onSelect(coords);

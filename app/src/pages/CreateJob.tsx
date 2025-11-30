@@ -176,7 +176,6 @@ export function CreateJob({ user }: CreateJobProps) {
               id="groupWork"
               checked={groupWork}
               onCheckedChange={() => { setGroupWork((value) => !value) }}
-              required
             />
             <Label htmlFor="groupWork">Декілька робітників</Label>
           </div>

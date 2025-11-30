@@ -3,8 +3,8 @@ import type { Dispatch } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
-import { MapPicker } from '@/components/map-picker';
-import { apiFetch, geoFetch } from '@/lib/api';
+import { LocationSettings } from '@/components/location-settings';
+import { apiFetch } from '@/lib/api';
 import { updateUser } from '@/lib/storageHelper';
 import { filterObjectKeys } from '@/lib/utils';
 import { ADDRESS_FIELDS } from '@/lib/constants';
@@ -18,15 +18,11 @@ export const LocationPicker = ({ user, setUser }: { user: any, setUser: Dispatch
     return <Navigate to="/login" replace />;
   }
 
-  const handleSelect = async (coordinates: [number, number]) => {
+  const handleSelect = async (
+    { coordinates, address }: { coordinates: [number, number], address: any }
+  ) => {
     setCoords(coordinates);
-
-    const [lat, lon] = coordinates;
-    const result = await geoFetch(lat, lon);
-
-    if (result) {
-      setAddress(result);
-    }
+    setAddress(address);
   }
 
   const handleSave = async () => {
@@ -54,16 +50,9 @@ export const LocationPicker = ({ user, setUser }: { user: any, setUser: Dispatch
   return (
     <div className="p-4">
       <h1 className="text-xl mb-4">Налаштування розміщення</h1>
-      <MapPicker onSelect={handleSelect} coords={coords}
-        style={{ minHeight: "300px", height: "60vh", width: "100%" }} />
-
-      <p>{coords?.join(', ')}</p>
-
-      {
-        address && Object.entries(address).map(
-          ([key, value]) => <p key={key}>{key}: {value as any}</p>
-        )
-      }
+      <LocationSettings
+        user={user}
+        onChange={handleSelect} />
 
       <Button onClick={handleSave}>
         Зберегти локацію
