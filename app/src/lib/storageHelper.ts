@@ -1,9 +1,14 @@
 import { USER_COOKIE_NAME } from './constants';
 
 export const setUser = async (value: object, expires?: number) => {
+  const entries = Object.entries(value);
+  const newValue = Object.fromEntries(
+    entries.filter(([key]) => key !== 'aboutMe')
+  );
+
   await window.cookieStore.set({
     name: USER_COOKIE_NAME,
-    value: JSON.stringify(value),
+    value: JSON.stringify(newValue),
     expires,
   });
 };
