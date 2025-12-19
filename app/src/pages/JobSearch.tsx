@@ -232,16 +232,18 @@ export function JobSearch({ user }: JobSearchProps) {
                 )}
 
                 {/* 🧩 приховані деталі score */}
-                <details className="mt-3 text-sm text-gray-500">
-                  <summary className="cursor-pointer hover:text-gray-700 transition-colors">Показати деталі оцінки</summary>
-                  <div className="mt-2 space-y-1 pl-2 border-l border-gray-300">
-                    <p><strong>Загальний бал:</strong> {job.score?.toFixed(3)}</p>
-                    <p><strong>Оцінка зарплати:</strong> {job.salaryScore?.toFixed(3)}</p>
-                    <p><strong>Оцінка відстані:</strong> {job.distanceScore?.toFixed(3)}</p>
-                    <p><strong>Оцінка категорії:</strong> {job.categoryScore?.toFixed(3)}</p>
-                    <p><strong>Оцінка репутації:</strong> {job.reputationScore?.toFixed(3)}</p>
-                  </div>
-                </details>
+                {job.score && 
+                  <details className="mt-3 text-sm text-gray-500">
+                    <summary className="cursor-pointer hover:text-gray-700 transition-colors">Показати деталі оцінки</summary>
+                    <div className="mt-2 space-y-1 pl-2 border-l border-gray-300">
+                      <p><strong>Загальний бал:</strong> {job.score?.toFixed(3)}</p>
+                      <p><strong>Оцінка зарплати:</strong> {job.salaryScore?.toFixed(3)}</p>
+                      <p><strong>Оцінка відстані:</strong> {job.distanceScore?.toFixed(3)}</p>
+                      <p><strong>Оцінка категорії:</strong> {job.categoryScore?.toFixed(3)}</p>
+                      <p><strong>Оцінка репутації:</strong> {job.reputationScore?.toFixed(3)}</p>
+                    </div>
+                  </details>
+                }
 
                 {/* кнопка "Відгукнутись" */}
                 <div className="mt-4">

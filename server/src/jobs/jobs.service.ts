@@ -164,10 +164,10 @@ export class JobsService {
         },
       },
 
-      generateScoreCalculation('$maxHourRate', user.interestedCategories),
-      generateWeightConvolution(weights),
+      // generateScoreCalculation('$maxHourRate', user.interestedCategories),
+      // generateWeightConvolution(weights),
 
-      { $sort: { score: -1 } },
+      // { $sort: { score: -1 } },
 
       {
         $lookup: {
@@ -221,21 +221,17 @@ export class JobsService {
     ];
     const weights = generateWeights(order);
 
-    const maxSalaryDoc = await this.jobModel
-      .findOne({ status: 'active' })
-      .sort({ hourRate: -1 })
-      .select('hourRate')
-      .lean();
-
-    const maxSalary = maxSalaryDoc?.hourRate ?? 1;
-
     // 2️⃣ Пайплайн
     const jobs = await this.jobModel.aggregate([
       {
         $geoNear: {
-          near: user.location.coordinates as [number, number],
+          near: {
+            type: 'Point',
+            coordinates: user.location.coordinates as [number, number],
+          },
           distanceField: 'distance',
-          distanceMultiplier: 200,
+          distanceMultiplier: 0.0002,
+          maxDistance: 5000,
           spherical: true,
           query: {
             status: 'active',
@@ -256,7 +252,15 @@ export class JobsService {
       },
       { $unwind: '$owner' },
 
-      generateScoreCalculation(maxSalary, user.interestedCategories),
+      {
+        $setWindowFields: {
+          output: {
+            maxHourRate: { $max: '$hourRate' },
+          },
+        },
+      },
+
+      generateScoreCalculation('$maxHourRate', user.interestedCategories),
       generateWeightConvolution(weights),
 
       { $sort: { score: -1 } },
